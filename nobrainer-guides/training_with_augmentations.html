@@ -1,0 +1,770 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Training a segmentation model with data augmentation &#8212; Nobrainer Book</title>
+    
+  <link href="../_static/css/theme.css" rel="stylesheet">
+  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Train a neural network with very little data" href="transfer_learning-bayesian.html" />
+    <link rel="prev" title="Train on multiple GPUs" href="train_on_multiple_gpus.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="../_static/sample_logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">Nobrainer Book</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../welcome.html">
+   Welcome to Nobrainer Book!
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Nobrainer
+ </span>
+</p>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../nobrainer_intro.html">
+   Introduction
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../Installation.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../Implementations.html">
+   Implementations
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../Nobrainer/Tutorials.html">
+   Nobrainer Tutorials
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../Nobrainer/tutorial_brain_generation.html">
+     Generating a synthetic T1-weighted brain scan
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../Nobrainer/tutorial_brain_mask.html">
+     Predicting a brain mask for a T1-weighted brain scan
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../Nobrainer/tutorial_data_augmentation.html">
+     Data augmentation
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../Nobrainer/tutorial_transfer_learning.html">
+     Transfer learning
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../Nobrainer/tutorial_using_trained_models.html">
+     Using pre-trained networks
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../Nobrainer/Jupyter_notebooks_intro.html">
+   Guide Jupyter Notebooks
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="01-getting_started.html">
+     Getting started with Nobrainer
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="02-preparing_training_data.html">
+     Preparing training data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="api_train_binary_segmentation.html">
+     Train a neural network for binary volumetric segmentation
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="api_train_generation_progressive.html">
+     Train a neural network for mri generation using progressive growing
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="inference_with_kwyk_model.html">
+     Get brain tissue parcellation using kwyk model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="train_autoencoder.html">
+     Train a neural network for MRI representation learning using progressive auto-encoder
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="train_binary_classification.html">
+     Train a neural network for binary classification
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="train_binary_segmentation.html">
+     Train a neural network for binary volumetric segmentation
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="train_generation_progressive.html">
+     Train a neural network for mri generation using progressive growing
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="train_on_multiple_gpus.html">
+     Train on multiple GPUs
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Training a segmentation model with data augmentation
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="transfer_learning-bayesian.html">
+     Train a neural network with very little data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="transfer_learning.html">
+     Train a neural network with very little data
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Nobrainer-zoo
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../Nobrainer-zoo/zoo_intro.html">
+   Starting with Nobrainer-zoo
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/nobrainer-guides/training_with_augmentations.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/neuronets/nobrainer-book"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/neuronets/nobrainer-book/issues/new?title=Issue%20on%20page%20%2Fnobrainer-guides/training_with_augmentations.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
+            
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav" aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   Training a segmentation model with data augmentation
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#google-colaboratory">
+     Google Colaboratory
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#get-sample-features-and-labels">
+   Get sample features and labels
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#convert-medical-images-to-tfrecords">
+   Convert medical images to TFRecords
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#create-datasets">
+   Create Datasets
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#instantiate-a-neural-network">
+   Instantiate a neural network
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#choose-a-loss-function-and-metrics">
+   Choose a loss function and metrics
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#train-and-evaluate-model">
+   Train and evaluate model
+  </a>
+ </li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Training a segmentation model with data augmentation</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   Training a segmentation model with data augmentation
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#google-colaboratory">
+     Google Colaboratory
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#get-sample-features-and-labels">
+   Get sample features and labels
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#convert-medical-images-to-tfrecords">
+   Convert medical images to TFRecords
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#create-datasets">
+   Create Datasets
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#instantiate-a-neural-network">
+   Instantiate a neural network
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#choose-a-loss-function-and-metrics">
+   Choose a loss function and metrics
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#train-and-evaluate-model">
+   Train and evaluate model
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            
+              <div>
+                
+  <div class="tex2jax_ignore mathjax_ignore section" id="training-a-segmentation-model-with-data-augmentation">
+<h1>Training a segmentation model with data augmentation<a class="headerlink" href="#training-a-segmentation-model-with-data-augmentation" title="Permalink to this headline">¶</a></h1>
+<p>In this notebook, we will use Nobrainer to augment training data which will be useful to learn more robust model for brain extraction task. Nobrainer provides several methods of augmenting volumetric data including spatial and intensity transforms.Augmentation is useful when the training data is insufficient to train large convolutional neural networks. Augmentation also improves robustness of the network and improves generalization to different datasets.</p>
+<p>In the following cells, we will:</p>
+<ol class="simple">
+<li><p>Get sample T1-weighted MR scans as features and FreeSurfer segmentations as labels.</p>
+<ul class="simple">
+<li><p>We will binarize the FreeSurfer to get a precise brainmask.</p></li>
+</ul>
+</li>
+<li><p>Convert the data to TFRecords format.</p></li>
+<li><p>Create two Datasets of the features and labels.</p>
+<ul class="simple">
+<li><p>One dataset will be for training and the other will be for evaluation.</p></li>
+<li><p>Set a sequence of augmentations for training</p></li>
+</ul>
+</li>
+<li><p>Instantiate a 3D convolutional neural network.</p></li>
+<li><p>Choose a loss function and metrics to use.</p></li>
+<li><p>Train on part of the data.</p></li>
+<li><p>Evaluate on the rest of the data.</p></li>
+</ol>
+<div class="section" id="google-colaboratory">
+<h2>Google Colaboratory<a class="headerlink" href="#google-colaboratory" title="Permalink to this headline">¶</a></h2>
+<p>If you are using Colab, please switch your runtime to GPU. To do this, select <code class="docutils literal notranslate"><span class="pre">Runtime</span> <span class="pre">&gt;</span> <span class="pre">Change</span> <span class="pre">runtime</span> <span class="pre">type</span></code> in the top menu. Then select GPU under <code class="docutils literal notranslate"><span class="pre">Hardware</span> <span class="pre">accelerator</span></code>. A GPU greatly speeds up training.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">nobrainer</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="tex2jax_ignore mathjax_ignore section" id="get-sample-features-and-labels">
+<h1>Get sample features and labels<a class="headerlink" href="#get-sample-features-and-labels" title="Permalink to this headline">¶</a></h1>
+<p>We use 9 pairs of volumes for training and 1 pair of volumes for evaulation. Many more volumes would be required to train a model for any useful purpose.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">csv_of_filepaths</span> <span class="o">=</span> <span class="n">nobrainer</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+<span class="n">filepaths</span> <span class="o">=</span> <span class="n">nobrainer</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csv_of_filepaths</span><span class="p">)</span>
+
+<span class="n">train_paths</span> <span class="o">=</span> <span class="n">filepaths</span><span class="p">[:</span><span class="mi">9</span><span class="p">]</span>
+<span class="n">evaluate_paths</span> <span class="o">=</span> <span class="n">filepaths</span><span class="p">[</span><span class="mi">9</span><span class="p">:]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="tex2jax_ignore mathjax_ignore section" id="convert-medical-images-to-tfrecords">
+<h1>Convert medical images to TFRecords<a class="headerlink" href="#convert-medical-images-to-tfrecords" title="Permalink to this headline">¶</a></h1>
+<p>Remember how many full volumes are in the TFRecords files. This will be necessary to know how many steps are in on training epoch. The default training method needs to know this number, because Datasets don’t always know how many items they contain.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Verify that all volumes have the same shape and that labels are integer-ish.</span>
+
+<span class="n">invalid</span> <span class="o">=</span> <span class="n">nobrainer</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">verify_features_labels</span><span class="p">(</span><span class="n">train_paths</span><span class="p">)</span>
+<span class="k">assert</span> <span class="ow">not</span> <span class="n">invalid</span>
+
+<span class="n">invalid</span> <span class="o">=</span> <span class="n">nobrainer</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">verify_features_labels</span><span class="p">(</span><span class="n">evaluate_paths</span><span class="p">)</span>
+<span class="k">assert</span> <span class="ow">not</span> <span class="n">invalid</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>mkdir -p data
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Convert training and evaluation data to TFRecords.</span>
+
+<span class="n">nobrainer</span><span class="o">.</span><span class="n">tfrecord</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+    <span class="n">features_labels</span><span class="o">=</span><span class="n">train_paths</span><span class="p">,</span>
+    <span class="n">filename_template</span><span class="o">=</span><span class="s1">&#39;data/data-train_shard-</span><span class="si">{shard:03d}</span><span class="s1">.tfrec&#39;</span><span class="p">,</span>
+    <span class="n">examples_per_shard</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="n">nobrainer</span><span class="o">.</span><span class="n">tfrecord</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+    <span class="n">features_labels</span><span class="o">=</span><span class="n">evaluate_paths</span><span class="p">,</span>
+    <span class="n">filename_template</span><span class="o">=</span><span class="s1">&#39;data/data-evaluate_shard-</span><span class="si">{shard:03d}</span><span class="s1">.tfrec&#39;</span><span class="p">,</span>
+    <span class="n">examples_per_shard</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>ls data
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="tex2jax_ignore mathjax_ignore section" id="create-datasets">
+<h1>Create Datasets<a class="headerlink" href="#create-datasets" title="Permalink to this headline">¶</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_classes</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">volume_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
+<span class="n">block_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+<span class="n">n_epochs</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">shuffle_buffer_size</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">num_parallel_calls</span> <span class="o">=</span> <span class="mi">2</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Take a look at different augmentation options in Nobrainer spatial and intensity transforms. To set training with multiple augmentations, the ‘augment’ will be set as a list where their order will determine the sequence of execution. For example augment option below will first add Gaussian noise and will then perform the random flip.
+Parameters of any given augmentation techniques can be set as shown below ( eg. ‘noise_mean’:0.1’) otherwise default parameter settings will be applied.</p>
+<p>For training without augmentation, set ‘augment = None’.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">nobrainer.intensity_transforms</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">nobrainer.spatial_transforms</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">augment</span> <span class="o">=</span> <span class="p">[(</span><span class="n">addGaussianNoise</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;noise_mean&#39;</span><span class="p">:</span><span class="mf">0.1</span><span class="p">,</span><span class="s1">&#39;noise_std&#39;</span><span class="p">:</span><span class="mf">0.5</span><span class="p">}),</span> <span class="p">(</span><span class="n">randomflip_leftright</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset_train</span> <span class="o">=</span> <span class="n">nobrainer</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span>
+    <span class="n">file_pattern</span><span class="o">=</span><span class="s1">&#39;data/data-train_shard-*.tfrec&#39;</span><span class="p">,</span>
+    <span class="n">n_classes</span><span class="o">=</span><span class="n">n_classes</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+    <span class="n">volume_shape</span><span class="o">=</span><span class="n">volume_shape</span><span class="p">,</span>
+    <span class="n">block_shape</span><span class="o">=</span><span class="n">block_shape</span><span class="p">,</span>
+    <span class="n">n_epochs</span><span class="o">=</span><span class="n">n_epochs</span><span class="p">,</span>
+    <span class="n">augment</span><span class="o">=</span><span class="n">augment</span><span class="p">,</span>
+    <span class="n">shuffle_buffer_size</span><span class="o">=</span><span class="n">shuffle_buffer_size</span><span class="p">,</span>
+    <span class="n">num_parallel_calls</span><span class="o">=</span><span class="n">num_parallel_calls</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">dataset_evaluate</span> <span class="o">=</span> <span class="n">nobrainer</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span>
+    <span class="n">file_pattern</span><span class="o">=</span><span class="s1">&#39;data/data-evaluate_shard-*.tfrec&#39;</span><span class="p">,</span>
+    <span class="n">n_classes</span><span class="o">=</span><span class="n">n_classes</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+    <span class="n">volume_shape</span><span class="o">=</span><span class="n">volume_shape</span><span class="p">,</span>
+    <span class="n">block_shape</span><span class="o">=</span><span class="n">block_shape</span><span class="p">,</span>
+    <span class="n">n_epochs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">augment</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">shuffle_buffer_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">num_parallel_calls</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset_train</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset_evaluate</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="tex2jax_ignore mathjax_ignore section" id="instantiate-a-neural-network">
+<h1>Instantiate a neural network<a class="headerlink" href="#instantiate-a-neural-network" title="Permalink to this headline">¶</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">nobrainer</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">unet</span><span class="p">(</span>
+    <span class="n">n_classes</span><span class="o">=</span><span class="n">n_classes</span><span class="p">,</span> 
+    <span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="o">*</span><span class="n">block_shape</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">batchnorm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="tex2jax_ignore mathjax_ignore section" id="choose-a-loss-function-and-metrics">
+<h1>Choose a loss function and metrics<a class="headerlink" href="#choose-a-loss-function-and-metrics" title="Permalink to this headline">¶</a></h1>
+<p>We have many choices of loss functions for binary segmentation. One can choose from binary crossentropy, Dice, Jaccard, Tversky, and many other loss functions.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="mf">1e-04</span><span class="p">)</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span>
+    <span class="n">loss</span><span class="o">=</span><span class="n">nobrainer</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">dice</span><span class="p">,</span>
+    <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">nobrainer</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">dice</span><span class="p">,</span> <span class="n">nobrainer</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">jaccard</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="tex2jax_ignore mathjax_ignore section" id="train-and-evaluate-model">
+<h1>Train and evaluate model<a class="headerlink" href="#train-and-evaluate-model" title="Permalink to this headline">¶</a></h1>
+<div class="math notranslate nohighlight">
+\[
+steps = \frac{nBlocks}{volume} * \frac{nVolumes}{batchSize}
+\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">steps_per_epoch</span> <span class="o">=</span> <span class="n">nobrainer</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">get_steps_per_epoch</span><span class="p">(</span>
+    <span class="n">n_volumes</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">train_paths</span><span class="p">),</span>
+    <span class="n">volume_shape</span><span class="o">=</span><span class="n">volume_shape</span><span class="p">,</span>
+    <span class="n">block_shape</span><span class="o">=</span><span class="n">block_shape</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span>
+
+<span class="n">steps_per_epoch</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">validation_steps</span> <span class="o">=</span> <span class="n">nobrainer</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">get_steps_per_epoch</span><span class="p">(</span>
+    <span class="n">n_volumes</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">evaluate_paths</span><span class="p">),</span>
+    <span class="n">volume_shape</span><span class="o">=</span><span class="n">volume_shape</span><span class="p">,</span>
+    <span class="n">block_shape</span><span class="o">=</span><span class="n">block_shape</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span>
+
+<span class="n">validation_steps</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">dataset_train</span><span class="p">,</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">steps_per_epoch</span><span class="o">=</span><span class="n">steps_per_epoch</span><span class="p">,</span> 
+    <span class="n">validation_data</span><span class="o">=</span><span class="n">dataset_evaluate</span><span class="p">,</span> 
+    <span class="n">validation_steps</span><span class="o">=</span><span class="n">validation_steps</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./nobrainer-guides"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+            
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="train_on_multiple_gpus.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Train on multiple GPUs</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="transfer_learning-bayesian.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Train a neural network with very little data</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+            
+        </div>
+    </div>
+    <footer class="footer">
+  <p>
+    
+      By Nobrainer Developers<br/>
+    
+        &copy; Copyright 2022.<br/>
+  </p>
+</footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+
+  </body>
+</html>

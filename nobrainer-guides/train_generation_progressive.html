@@ -1,0 +1,810 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Train a neural network for mri generation using progressive growing &#8212; Nobrainer Book</title>
+    
+  <link href="../_static/css/theme.css" rel="stylesheet">
+  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Train on multiple GPUs" href="train_on_multiple_gpus.html" />
+    <link rel="prev" title="Train a neural network for binary volumetric segmentation" href="train_binary_segmentation.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="../_static/sample_logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">Nobrainer Book</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../welcome.html">
+   Welcome to Nobrainer Book!
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Nobrainer
+ </span>
+</p>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../nobrainer_intro.html">
+   Introduction
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../Installation.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../Implementations.html">
+   Implementations
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../Nobrainer/Tutorials.html">
+   Nobrainer Tutorials
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../Nobrainer/tutorial_brain_generation.html">
+     Generating a synthetic T1-weighted brain scan
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../Nobrainer/tutorial_brain_mask.html">
+     Predicting a brain mask for a T1-weighted brain scan
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../Nobrainer/tutorial_data_augmentation.html">
+     Data augmentation
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../Nobrainer/tutorial_transfer_learning.html">
+     Transfer learning
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../Nobrainer/tutorial_using_trained_models.html">
+     Using pre-trained networks
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../Nobrainer/Jupyter_notebooks_intro.html">
+   Guide Jupyter Notebooks
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="01-getting_started.html">
+     Getting started with Nobrainer
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="02-preparing_training_data.html">
+     Preparing training data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="api_train_binary_segmentation.html">
+     Train a neural network for binary volumetric segmentation
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="api_train_generation_progressive.html">
+     Train a neural network for mri generation using progressive growing
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="inference_with_kwyk_model.html">
+     Get brain tissue parcellation using kwyk model
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="train_autoencoder.html">
+     Train a neural network for MRI representation learning using progressive auto-encoder
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="train_binary_classification.html">
+     Train a neural network for binary classification
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="train_binary_segmentation.html">
+     Train a neural network for binary volumetric segmentation
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Train a neural network for mri generation using progressive growing
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="train_on_multiple_gpus.html">
+     Train on multiple GPUs
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="training_with_augmentations.html">
+     Training a segmentation model with data augmentation
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="transfer_learning-bayesian.html">
+     Train a neural network with very little data
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="transfer_learning.html">
+     Train a neural network with very little data
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Nobrainer-zoo
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../Nobrainer-zoo/zoo_intro.html">
+   Starting with Nobrainer-zoo
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/nobrainer-guides/train_generation_progressive.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/neuronets/nobrainer-book"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/neuronets/nobrainer-book/issues/new?title=Issue%20on%20page%20%2Fnobrainer-guides/train_generation_progressive.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
+            
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav" aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   Train a neural network for mri generation using progressive growing
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#google-colaboratory">
+     Google Colaboratory
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#get-sample-features-and-labels">
+   Get sample features and labels
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#convert-medical-images-to-tfrecords">
+   Convert medical images to TFRecords
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#set-the-hyperparameters">
+   Set the Hyperparameters
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#create-logging-directories">
+   Create logging directories
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#instantiate-a-neural-network">
+   Instantiate a neural network
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#train-the-network-progressively-for-each-resolution">
+   Train the network progressively for each resolution
+  </a>
+ </li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Train a neural network for mri generation using progressive growing</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   Train a neural network for mri generation using progressive growing
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#google-colaboratory">
+     Google Colaboratory
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#get-sample-features-and-labels">
+   Get sample features and labels
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#convert-medical-images-to-tfrecords">
+   Convert medical images to TFRecords
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#set-the-hyperparameters">
+   Set the Hyperparameters
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#create-logging-directories">
+   Create logging directories
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#instantiate-a-neural-network">
+   Instantiate a neural network
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#train-the-network-progressively-for-each-resolution">
+   Train the network progressively for each resolution
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            
+              <div>
+                
+  <div class="tex2jax_ignore mathjax_ignore section" id="train-a-neural-network-for-mri-generation-using-progressive-growing">
+<h1>Train a neural network for mri generation using progressive growing<a class="headerlink" href="#train-a-neural-network-for-mri-generation-using-progressive-growing" title="Permalink to this headline">¶</a></h1>
+<p>In this notebook, we will use Nobrainer to train a model for brain MRI generation. Brain MRI generation is a useful task in synthetically creating neuroimaging data. We will use a Generative Adversarial Network to model the generation and use a progressive growing training method for high quality generation at higher resolutions.</p>
+<p>In the following cells, we will:</p>
+<ol class="simple">
+<li><p>Get sample T1-weighted MR scans as features.</p></li>
+<li><p>Convert the data to TFRecords format.</p></li>
+<li><p>Instantiate a progressive convolutional neural network for generator and discriminator.</p></li>
+<li><p>Create a Dataset of the features.</p></li>
+<li><p>Instantiate a trainer and choose a loss function to use.</p></li>
+<li><p>Train on part of the data in two phases (transition and resolution).</p></li>
+<li><p>Repeat steps 4-6 for each growing resolution.</p></li>
+<li><p>Generate some images using trained model</p></li>
+</ol>
+<div class="section" id="google-colaboratory">
+<h2>Google Colaboratory<a class="headerlink" href="#google-colaboratory" title="Permalink to this headline">¶</a></h2>
+<p>If you are using Colab, please switch your runtime to GPU. To do this, select <code class="docutils literal notranslate"><span class="pre">Runtime</span> <span class="pre">&gt;</span> <span class="pre">Change</span> <span class="pre">runtime</span> <span class="pre">type</span></code> in the top menu. Then select GPU under <code class="docutils literal notranslate"><span class="pre">Hardware</span> <span class="pre">accelerator</span></code>. A GPU greatly speeds up training.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip install --no-cache-dir nilearn nobrainer
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">nobrainer</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="tex2jax_ignore mathjax_ignore section" id="get-sample-features-and-labels">
+<h1>Get sample features and labels<a class="headerlink" href="#get-sample-features-and-labels" title="Permalink to this headline">¶</a></h1>
+<p>We use 9 pairs of volumes for training and 1 pair of volumes for evaluation. Many more volumes would be required to train a model for any useful purpose.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">csv_of_filepaths</span> <span class="o">=</span> <span class="n">nobrainer</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+<span class="n">filepaths</span> <span class="o">=</span> <span class="n">nobrainer</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csv_of_filepaths</span><span class="p">)</span>
+
+<span class="n">train_paths</span> <span class="o">=</span> <span class="n">filepaths</span><span class="p">[:</span><span class="mi">9</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="tex2jax_ignore mathjax_ignore section" id="convert-medical-images-to-tfrecords">
+<h1>Convert medical images to TFRecords<a class="headerlink" href="#convert-medical-images-to-tfrecords" title="Permalink to this headline">¶</a></h1>
+<p>Remember how many full volumes are in the TFRecords files. This will be necessary to know how many steps are in on training epoch. The default training method needs to know this number, because Datasets don’t always know how many items they contain.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>mkdir -p data
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">resolution_batch_size_map</span> <span class="o">=</span> <span class="p">{</span><span class="mi">8</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">16</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">32</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">64</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">128</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">256</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span> 
+<span class="c1"># resolution_batch_size_map = {8: 32, 16: 16, 32: 8, 64: 4, 128: 1, 256: 1} uncomment when sufficient compute is available</span>
+<span class="n">resolutions</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">resolution_batch_size_map</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+
+<span class="n">nobrainer</span><span class="o">.</span><span class="n">tfrecord</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+    <span class="n">features_labels</span><span class="o">=</span><span class="n">train_paths</span><span class="p">,</span>
+    <span class="n">filename_template</span><span class="o">=</span><span class="s1">&#39;data/data-train_shard-</span><span class="si">{shard:03d}</span><span class="s1">.tfrec&#39;</span><span class="p">,</span>
+    <span class="n">examples_per_shard</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="c1"># change for larger dataset</span>
+    <span class="n">multi_resolution</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">resolutions</span><span class="o">=</span><span class="n">resolutions</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="tex2jax_ignore mathjax_ignore section" id="set-the-hyperparameters">
+<h1>Set the Hyperparameters<a class="headerlink" href="#set-the-hyperparameters" title="Permalink to this headline">¶</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">latent_size</span> <span class="o">=</span> <span class="mi">256</span>
+<span class="n">g_fmap_base</span> <span class="o">=</span> <span class="mi">1024</span>
+<span class="n">d_fmap_base</span> <span class="o">=</span> <span class="mi">1024</span>
+<span class="c1"># latent_size = 1024 uncomment when sufficient compute is available</span>
+<span class="c1"># g_fmap_base = 4096 uncomment when sufficient compute is available</span>
+<span class="c1"># d_fmap_base = 4096 uncomment when sufficient compute is available</span>
+<span class="n">num_parallel_calls</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">iterations</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="c1"># iterations = int(300e3) uncomment when sufficient compute is available</span>
+<span class="n">lr</span> <span class="o">=</span> <span class="mf">1e-4</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="tex2jax_ignore mathjax_ignore section" id="create-logging-directories">
+<h1>Create logging directories<a class="headerlink" href="#create-logging-directories" title="Permalink to this headline">¶</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="n">save_dir</span> <span class="o">=</span> <span class="s1">&#39;pgan&#39;</span>
+
+<span class="n">save_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">save_dir</span><span class="p">)</span>
+<span class="n">generated_dir</span> <span class="o">=</span> <span class="n">save_dir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;generated&#39;</span><span class="p">)</span>
+<span class="n">model_dir</span> <span class="o">=</span> <span class="n">save_dir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;saved_models&#39;</span><span class="p">)</span>
+<span class="n">log_dir</span> <span class="o">=</span> <span class="n">save_dir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;logs&#39;</span><span class="p">)</span>
+
+<span class="n">save_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">generated_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">model_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="tex2jax_ignore mathjax_ignore section" id="instantiate-a-neural-network">
+<h1>Instantiate a neural network<a class="headerlink" href="#instantiate-a-neural-network" title="Permalink to this headline">¶</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">generator</span><span class="p">,</span> <span class="n">discriminator</span> <span class="o">=</span> <span class="n">nobrainer</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">progressivegan</span><span class="p">(</span><span class="n">latent_size</span><span class="p">,</span> 
+                                                           <span class="n">g_fmap_base</span><span class="o">=</span><span class="n">g_fmap_base</span><span class="p">,</span> 
+                                                           <span class="n">d_fmap_base</span><span class="o">=</span><span class="n">d_fmap_base</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="tex2jax_ignore mathjax_ignore section" id="train-the-network-progressively-for-each-resolution">
+<h1>Train the network progressively for each resolution<a class="headerlink" href="#train-the-network-progressively-for-each-resolution" title="Permalink to this headline">¶</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">resolution</span> <span class="ow">in</span> <span class="n">resolutions</span><span class="p">:</span>
+    
+    <span class="c1"># create a train dataset with features for resolution</span>
+    <span class="n">dataset_train</span> <span class="o">=</span> <span class="n">nobrainer</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span>
+        <span class="n">file_pattern</span><span class="o">=</span><span class="s2">&quot;data/*res-</span><span class="si">%03d</span><span class="s2">*.tfrec&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">resolution</span><span class="p">),</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="n">resolution_batch_size_map</span><span class="p">[</span><span class="n">resolution</span><span class="p">],</span>
+        <span class="n">num_parallel_calls</span><span class="o">=</span><span class="n">num_parallel_calls</span><span class="p">,</span>
+        <span class="n">volume_shape</span><span class="o">=</span><span class="p">(</span><span class="n">resolution</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="n">resolution</span><span class="p">),</span>
+        <span class="n">n_classes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="c1"># dummy labels as this is unsupervised training</span>
+        <span class="n">scalar_label</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">normalizer</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+
+    <span class="c1"># grow the networks by one (2^x) resolution</span>
+    <span class="n">generator</span><span class="o">.</span><span class="n">add_resolution</span><span class="p">()</span>
+    <span class="n">discriminator</span><span class="o">.</span><span class="n">add_resolution</span><span class="p">()</span>
+
+    <span class="c1"># instantiate a progressive training helper</span>
+    <span class="n">progressive_gan_trainer</span> <span class="o">=</span> <span class="n">nobrainer</span><span class="o">.</span><span class="n">training</span><span class="o">.</span><span class="n">ProgressiveGANTrainer</span><span class="p">(</span>
+        <span class="n">generator</span><span class="o">=</span><span class="n">generator</span><span class="p">,</span>
+        <span class="n">discriminator</span><span class="o">=</span><span class="n">discriminator</span><span class="p">,</span>
+        <span class="n">gradient_penalty</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># compile with optimizers and loss function of choice</span>
+    <span class="n">progressive_gan_trainer</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="n">g_optimizer</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span> <span class="n">beta_1</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">beta_2</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">),</span>
+        <span class="n">d_optimizer</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span> <span class="n">beta_1</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">beta_2</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">),</span>
+        <span class="n">g_loss_fn</span><span class="o">=</span><span class="n">nobrainer</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">wasserstein</span><span class="p">,</span>
+        <span class="n">d_loss_fn</span><span class="o">=</span><span class="n">nobrainer</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">wasserstein</span>
+        <span class="p">)</span>
+
+    <span class="n">steps_per_epoch</span> <span class="o">=</span> <span class="n">iterations</span><span class="o">//</span><span class="n">resolution_batch_size_map</span><span class="p">[</span><span class="n">resolution</span><span class="p">]</span>
+    <span class="c1"># save_best_only is set to False as it is an adversarial loss</span>
+    <span class="n">model_checkpoint_callback</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">ModelCheckpoint</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">model_dir</span><span class="p">),</span> <span class="n">save_weights_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_best_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">save_freq</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="c1"># Train at resolution</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Resolution : </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resolution</span><span class="p">))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Transition phase&#39;</span><span class="p">)</span>
+    <span class="n">progressive_gan_trainer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+        <span class="n">dataset_train</span><span class="p">,</span>
+        <span class="n">phase</span><span class="o">=</span><span class="s1">&#39;transition&#39;</span><span class="p">,</span>
+        <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span>
+        <span class="n">steps_per_epoch</span><span class="o">=</span><span class="n">steps_per_epoch</span><span class="p">,</span> <span class="c1"># necessary for repeat dataset</span>
+        <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">model_checkpoint_callback</span><span class="p">])</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Resolution phase&#39;</span><span class="p">)</span>
+    <span class="n">progressive_gan_trainer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+        <span class="n">dataset_train</span><span class="p">,</span>
+        <span class="n">phase</span><span class="o">=</span><span class="s1">&#39;resolution&#39;</span><span class="p">,</span>
+        <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span>
+        <span class="n">steps_per_epoch</span><span class="o">=</span><span class="n">steps_per_epoch</span><span class="p">,</span>
+        <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">model_checkpoint_callback</span><span class="p">])</span>
+
+    <span class="c1"># save the final weights</span>
+    <span class="n">generator</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">model_dir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;generator_res_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resolution</span><span class="p">))))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">generator</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">discriminator</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The following code demonstrates how a model trained as shown above could be used to generate fake images.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">nilearn</span> <span class="kn">import</span> <span class="n">plotting</span>
+<span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
+
+<span class="n">latents</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">latent_size</span><span class="p">))</span>
+<span class="n">model_paths</span> <span class="o">=</span> <span class="n">model_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;generator_res*&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">model_path</span> <span class="ow">in</span> <span class="n">model_paths</span><span class="p">:</span>
+    <span class="n">generator</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">saved_model</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">model_path</span><span class="p">))</span>
+    <span class="n">generate</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">signatures</span><span class="p">[</span><span class="s2">&quot;serving_default&quot;</span><span class="p">]</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">generate</span><span class="p">(</span><span class="n">latents</span><span class="p">)[</span><span class="s2">&quot;generated&quot;</span><span class="p">]</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+    <span class="n">plotting</span><span class="o">.</span><span class="n">plot_anat</span><span class="p">(</span><span class="n">anat_img</span><span class="o">=</span><span class="n">img</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">model_path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Instead we will retrieve a pre-trained model to generate some brains.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>!wget -O- http://neuro.debian.net/lists/bionic.us-nh.full | tee /etc/apt/sources.list.d/neurodebian.sources.list \
+ &amp;&amp; export GNUPGHOME=&quot;$(mktemp -d)&quot; \
+ &amp;&amp; echo &quot;disable-ipv6&quot; &gt;&gt; ${GNUPGHOME}/dirmngr.conf \
+ &amp;&amp; (apt-key adv --homedir $GNUPGHOME --recv-keys --keyserver hkp://pgpkeys.eu 0xA5D32F012649A5A9 \
+|| { curl -sSL http://neuro.debian.net/_static/neuro.debian.net.asc | apt-key add -; } ) \
+ &amp;&amp; apt-get update \
+ &amp;&amp; apt-get install git-annex-standalone git
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip install --no-cache-dir nilearn datalad datalad-osf
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span> git config --global user.email <span class="s2">&quot;you@example.com&quot;</span> <span class="o">&amp;&amp;</span> git config --global user.name <span class="s2">&quot;Your Name&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>!datalad clone https://github.com/neuronets/trained-models &amp;&amp; \
+  cd trained-models &amp;&amp; git-annex enableremote osf-storage &amp;&amp; \
+  datalad get -r -s osf-storage neuronets/braingen/0.1.0/
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">nilearn</span> <span class="kn">import</span> <span class="n">plotting</span>
+<span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
+ 
+<span class="n">model_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;trained-models/neuronets/braingen/0.1.0&quot;</span><span class="p">)</span>
+<span class="n">latents</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1024</span><span class="p">))</span>
+<span class="n">model_paths</span> <span class="o">=</span> <span class="n">model_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;generator_res*&quot;</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">30</span><span class="p">))</span>
+<span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Since each generator continues training, the same latent will give rise to </span>
+<span class="sd">different fake brains for each generator.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="k">for</span> <span class="n">model_path</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">model_paths</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])):</span>
+    <span class="n">generator</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">saved_model</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">model_path</span><span class="p">))</span>
+    <span class="n">generate</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">signatures</span><span class="p">[</span><span class="s2">&quot;serving_default&quot;</span><span class="p">]</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">generate</span><span class="p">(</span><span class="n">latents</span><span class="p">)[</span><span class="s2">&quot;generated&quot;</span><span class="p">]</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+    <span class="n">plotting</span><span class="o">.</span><span class="n">plot_anat</span><span class="p">(</span><span class="n">anat_img</span><span class="o">=</span><span class="n">img</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> 
+                       <span class="n">draw_cross</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                       <span class="n">title</span><span class="o">=</span><span class="n">model_path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/train_generation_progressive_24_0.png" src="../_images/train_generation_progressive_24_0.png" />
+</div>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./nobrainer-guides"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+            
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="train_binary_segmentation.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Train a neural network for binary volumetric segmentation</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="train_on_multiple_gpus.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Train on multiple GPUs</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+            
+        </div>
+    </div>
+    <footer class="footer">
+  <p>
+    
+      By Nobrainer Developers<br/>
+    
+        &copy; Copyright 2022.<br/>
+  </p>
+</footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+
+  </body>
+</html>
