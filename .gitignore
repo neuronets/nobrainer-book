@@ -12,3 +12,7 @@ _build/
 
 # miscellaneous
 .DS_Store
+
+# PyCharm
+.idea/
+docs/.idea/
