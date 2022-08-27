@@ -1,0 +1,67 @@
+# Book settings
+title: Nobrainer Book
+author: Nobrainer Developers
+copyright: "2022"
+logo: "sample_logo.png"
+exclude_patterns: [README.md, _build, Thumbs.db, .DS_Store, "**.ipynb_checkpoints"]
+
+# Execution settings
+execute:
+  execute_notebooks: off  
+  cache: ""
+  exclude_patterns: []
+  timeout: 3000
+  run_in_temp: true 
+  allow_errors: true 
+  stderr_output: show 
+
+# Parse and render settings
+parse:
+  myst_enable_extensions:
+    # - amsmath
+    - colon_fence
+    # - deflist
+    - dollarmath
+    # - html_admonition
+    # - html_image
+    - linkify
+    # - replacements
+    # - smartquotes
+    - substitution
+    - tasklist
+
+# HTML-specific settings
+html:
+  use_edit_page_button: false
+  use_repository_button: true
+  use_issues_button: true
+  use_multitoc_numbering: true
+  extra_navbar: Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+  extra_footer: ""
+  google_analytics_id: ""
+  home_page_in_navbar: true
+  baseurl: ""
+  announcement: ""
+
+# Launch button settings
+launch_buttons:
+  notebook_interface: "jupyterlab"
+  binderhub_url: "" 
+  jupyterhub_url: "" 
+  colab_url: "" 
+
+repository:
+  url: https://github.com/neuronets/nobrainer-book
+  path_to_book: ""  
+  branch: master
+
+# Advanced and power-user settings
+sphinx:
+  extra_extensions:   
+  local_extensions:   
+  recursive_update: false 
+  config:
+  
+# Bibliography settings
+bibtex_bibfiles:
+  - references.bib

@@ -1,0 +1,35 @@
+format: jb-book
+root: welcome
+parts:
+- caption: Nobrainer
+  chapters:
+  - file: nobrainer_intro
+  - file: Installation
+  - file: Implementations
+  - file: Nobrainer/Tutorials
+    sections:
+    - file: Nobrainer/tutorial_brain_generation
+    - file: Nobrainer/tutorial_brain_mask
+    - file: Nobrainer/tutorial_data_augmentation
+    - file: Nobrainer/tutorial_transfer_learning
+    - file: Nobrainer/tutorial_using_trained_models
+
+  - file: Nobrainer/Jupyter_notebooks_intro
+    sections:
+    - file: nobrainer-guides/01-getting_started
+    - file: nobrainer-guides/02-preparing_training_data
+    - file: nobrainer-guides/api_train_binary_segmentation
+    - file: nobrainer-guides/api_train_generation_progressive
+    - file: nobrainer-guides/inference_with_kwyk_model
+    - file: nobrainer-guides/train_autoencoder
+    - file: nobrainer-guides/train_binary_classification
+    - file: nobrainer-guides/train_binary_segmentation
+    - file: nobrainer-guides/train_generation_progressive
+    - file: nobrainer-guides/train_on_multiple_gpus
+    - file: nobrainer-guides/training_with_augmentations
+    - file: nobrainer-guides/transfer_learning-bayesian
+    - file: nobrainer-guides/transfer_learning
+
+- caption: Nobrainer-zoo
+  chapters:
+  - file: Nobrainer-zoo/zoo_intro
