@@ -21,6 +21,7 @@
 # This tutorial will use a small publicly available dataset. To convert your own data, you will need to create a nested list of features and labels volumes (see below).
 #
 # %% id="egda7m595tPi"
+# !pip install --no-cache-dir nobrainer
 import nobrainer
 
 # %% [markdown] id="HeWmDZXq5tPj"
