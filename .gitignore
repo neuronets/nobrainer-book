@@ -1,5 +1,6 @@
 # pyenv
 .python-version
+env/*
 
 # documentation
 _build/
