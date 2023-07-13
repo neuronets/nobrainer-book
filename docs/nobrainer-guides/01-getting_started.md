@@ -58,7 +58,7 @@ Nobrainer can be installed using `pip`.
 
 ## Command-line
 
-Nobrainer provides the command-line program `nobrainer`, which contains various methods for preparing data, training and evaluating models, generating predictions, etc.
+Nobrainer provides the command-line program `nobrainer`, which provides various methods for preparing data, training and evaluating models, generating predictions, etc. While the `nobrainer` command provides easy-to-access functionality to perform simple tasks, this guide is focused on using the `nobrainer` python API to demonstrate advanced, low-level training capabilities.
 <!-- #endregion -->
 
 ```python id="HU6edUxDq5af"
@@ -85,7 +85,6 @@ import nobrainer
 - `nobrainer.metrics`: metrics for volumetric segmentation
 - `nobrainer.models`: pre-defined Keras models
 - `nobrainer.processing`: API for neuroimaging model training, inference, and generation
-- `nobrainer.tfrecords`: writing and reading of TFRecords files
 - `nobrainer.transform`: rigid transformations for data augmentation
 - `nobrainer.volume`: utilities for manipulating and augmenting volumetric data
 <!-- #endregion -->
@@ -99,16 +98,14 @@ The subsequent Jupyter notebooks in this guide demonstrate how to use `nobrainer
 
 ### Training examples
 
-- [Preparing training data](https://colab.research.google.com/github/neuronets/nobrainer/blob/master/guide/02-preparing_training_data.ipynb)
-- [Train binary classification](https://colab.research.google.com/github/neuronets/nobrainer/blob/master/guide/train_binary_classification.ipynb)
-- [Train binary segmentation](https://colab.research.google.com/github/neuronets/nobrainer/blob/master/guide/train_binary_segmentation.ipynb)
-- [Train on multiple GPUs](https://colab.research.google.com/github/neuronets/nobrainer/blob/master/guide/train_on_multiple_gpus.ipynb)
-- [Train/Use a progressive GAN](https://colab.research.google.com/github/neuronets/nobrainer/blob/master/guide/train_generation_progressive.ipynb)
-- [Transfer learning example](https://colab.research.google.com/github/neuronets/nobrainer/blob/master/guide/transfer_learning.ipynb)
+- [Preparing training data](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/ohinds-guide-api/docs/nobrainer-guides//02-preparing_training_data.ipynb)
+- [Train binary classification](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/ohinds-guide-api/docs/nobrainer-guides//train_binary_classification.ipynb)
+- [Train binary segmentation](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/ohinds-guide-api/docs/nobrainer-guides//train_binary_segmentation.ipynb)
+- [Train/Use a progressive GAN](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/ohinds-guide-api/docs/nobrainer-guides//train_generation_progressive.ipynb)
 
 ### Inference examples
 
-- [Inference using kwyk](https://colab.research.google.com/github/neuronets/nobrainer/blob/master/guide/Inference_with_kwyk_model.ipynb)- [Train/Use a progressive GAN](https://colab.research.google.com/github/neuronets/nobrainer/blob/master/guide/train_generation_progressive.ipynb)
+- [Inference using kwyk](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/ohinds-guide-api/docs/nobrainer-guides//Inference_with_kwyk_model.ipynb)- [Train/Use a progressive GAN](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/ohinds-guide-api/docs/nobrainer-guides//train_generation_progressive.ipynb)
 
 <!-- #endregion -->
 
