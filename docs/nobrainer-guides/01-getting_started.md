@@ -1,8 +1,8 @@
-<!--
 ---
 jupyter:
   jupytext:
     formats: ipynb,md
+    main_language: python
     text_representation:
       extension: .md
       format_name: markdown
@@ -12,7 +12,6 @@ jupyter:
     display_name: Python 3
     name: python3
 ---
--->
 
 <!-- #region id="JZjOrKRnq5aa" -->
 # Getting started with Nobrainer
@@ -79,7 +78,7 @@ import nobrainer
 <!-- #region id="eKpEQi0Xq5ag" -->
 ### Layout
 
-- `nobrainer.io`: `tf.data.Dataset` creation utilities
+- `nobrainer.dataset`: `tf.data.Dataset` creation utilities
 - `nobrainer.io`: input/output methods
 - `nobrainer.layers`: custom Keras layers
 - `nobrainer.losses`: loss functions for volumetric segmentation
