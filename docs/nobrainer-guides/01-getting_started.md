@@ -1,3 +1,4 @@
+<!--
 ---
 jupyter:
   jupytext:
@@ -11,6 +12,7 @@ jupyter:
     display_name: Python 3
     name: python3
 ---
+-->
 
 <!-- #region id="JZjOrKRnq5aa" -->
 # Getting started with Nobrainer
@@ -33,7 +35,7 @@ After you have gone through `02-preparing_training_data.ipynb`, please take a lo
 
 ## Google Colaboratory
 
-These notebooks can be [run for free](https://colab.research.google.com/github/neuronets/nobrainer-book/doc/nobrainer-guides) on Google Colaboratory (you must be signed into a Google account). If you are using Colab, please note that multiple open tabs of Colab notebooks will use the same resources (RAM, GPU). Downloading data in multiple Colab notebooks at the same time or training multiple models can quickly exhaust the available resources. For this reason, please run one notebook at a time, and keep an eye on the resources used.
+These notebooks can be [run for free](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/ohinds/guide-api/doc/nobrainer-guides) on Google Colaboratory (you must be signed into a Google account). If you are using Colab, please note that multiple open tabs of Colab notebooks will use the same resources (RAM, GPU). Downloading data in multiple Colab notebooks at the same time or training multiple models can quickly exhaust the available resources. For this reason, please run one notebook at a time, and keep an eye on the resources used.
 
 Users can choose to run Colab notebooks on CPU, GPU, or TPU. By default, the notebooks will use the CPU runtime. To use a different runtime, please select `Runtime > Change runtime type` in the menu bar. Then, choose either `GPU` or `TPU` under `Hardware accelerator`. No code changes are required when running on CPU or GPU runtime. When using the TPU runtime, however, special care must be taken for things to work properly. Please refer to the TPU guide notebook in this directory for more information.
 
