@@ -1,4 +1,7 @@
 # ---
+# kernelspec:
+#   display_name: Python 3
+#   name: python3
 # jupyter:
 #   jupytext:
 #     formats: ipynb,py:percent
@@ -7,10 +10,6 @@
 #       format_name: percent
 #       format_version: '1.3'
 #       jupytext_version: 1.14.7
-#   kernelspec:
-#     display_name: Python [conda env:nb]
-#     language: python
-#     name: conda-env-nb-py
 # ---
 
 # %% [markdown] id="8g2WKuIv5tPg"
@@ -19,9 +18,11 @@
 # In this tutorial, we will convert medical imaging data to the TFRecords format. Having data in the TFRecords format speeds up training and allows us to use standard, highly-optimized TensorFlow I/O methods. We will then create a `tf.data.Dataset` object using the TFRecords data. This `tf.data.Dataset` object can be used for training, evaluation, or prediction.
 #
 # This tutorial will use a small publicly available dataset. To convert your own data, you will need to create a nested list of features and labels volumes (see below).
-#
+
+# %% bash
+pip install --no-cache-dir nobrainer
+
 # %% id="egda7m595tPi"
-# !pip install --no-cache-dir nobrainer
 import nobrainer
 
 # %% [markdown] id="HeWmDZXq5tPj"
