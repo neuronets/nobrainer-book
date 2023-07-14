@@ -39,9 +39,10 @@
 
 # %% id="WhBnt2WdDlx9"
 # !pip install nobrainer nilearn
-# !export TF_CPP_MIN_LOG_LEVEL=3
 
 # %% id="Ht_CGSk1Dkt3"
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = 3
 import nobrainer
 
 
