@@ -1,10 +1,12 @@
 # ---
-# kernelspec:
-#   display_name: Python 3
-#   name: python3
+# jupyter:
+#   jupytext:
+#     text_representation:
+#       extension: .py
+#       format_name: percent
+#       format_version: '1.3'
+#       jupytext_version: 1.14.7
 # ---
-
-# %%
 
 # %% [markdown] id="8g2WKuIv5tPg"
 # # Preparing training data
