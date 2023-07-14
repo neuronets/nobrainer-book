@@ -113,6 +113,7 @@ history = bem.fit(dataset_train=dataset_train,
 
 # %% id="OWqLu2xFTa4U"
 import matplotlib.pyplot as plt
+from nilearn import plotting
 from nobrainer.volume import standardize
 
 image_path = filepaths[0][0]
