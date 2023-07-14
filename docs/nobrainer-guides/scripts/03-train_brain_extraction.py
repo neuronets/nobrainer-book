@@ -103,7 +103,7 @@ history = bem.fit(dataset_train=dataset_train,
 
 # %% [markdown]
 # ## Use the trained model to predict a binary brain mask
-# The segmentation isn't great, but it's surprisingly good given the small dataset and short training.
+# The segmentation is bad, but that isn't surprising given the small dataset and short training.
 
 # %% id="OWqLu2xFTa4U"
 import matplotlib.pyplot as plt
