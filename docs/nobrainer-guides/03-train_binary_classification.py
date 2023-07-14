@@ -21,14 +21,18 @@
 # In the following cells, we will:
 #
 # 1. Get sample T1-weighted MR scans as features and FreeSurfer segmentations as labels.
-#     - We will binarize the FreeSurfer to get a precise brainmask.
+#     - We will binarize the FreeSurfer segmentations to get a precise brainmask.
 # 2. Convert the data to TFRecords format.
 # 3. Create two Datasets of the features and labels.
 #     - One dataset will be for training and the other will be for evaluation.
-# 4. Instantiate a 3D convolutional neural network.
+# 4. Instantiate a 3D convolutional neural network (U-Net).
 # 5. Choose a loss function and metrics to use.
 # 6. Train on part of the data.
 # 7. Evaluate on the rest of the data.
+# 8. Predict a brain mask using the trained model.
+# 9. Save the model to disk for future prediction and/or training.
+# 10. Load the model back, and resume training.
+#
 #
 # ## Google Colaboratory
 #
@@ -80,8 +84,6 @@ dataset_train, dataset_eval = DT.from_files(paths=filepaths,
 # ## Construct a U-Net model
 # Here we'll train nobrainer's implementation of the U-Net model for biomendical image segmentation, based on https://arxiv.org/abs/1606.06650.
 #
-# After the model is constructed, a summary of the netowrk layers is printed.
-#
 # Note that a useful segmentation model would need to be trained on *many* more examples than the 10 we are using here for demonstration.
 
 # %% id="X8u_owicTa4T"
@@ -93,7 +95,7 @@ bem = Segmentation(unet, model_args=dict(batchnorm=True))
 
 # %% [markdown]
 # ## Train the model
-# Fit the data.
+# Fit the data. A summary of the model layers is printed before training starts.
 #
 # Note that the loss function after training is very high, and the dice coefficient (a measure of the accuracy of the model) is very low, indicating that the model is not doing a good job of binary segmentation. This is expected, as this is a toy problem to demonstrate the API. During successful training of a more practical model, you would see the loss drop and the dice rise as training progressed.
 
@@ -106,39 +108,45 @@ history = bem.fit(dataset_train=dataset_train,
 
 
 # %% [markdown]
-# ## Use the trained model to predict the binary brian mask
-#
+# ## Use the trained model to predict a binary brain mask
+# The segmentation isn't good, but we knew it wasn't going to be.
 
 # %% id="OWqLu2xFTa4U"
+import matplotlib.pyplot as plt
 from nobrainer.volume import standardize
 
 image_path = filepaths[0][0]
 out = bem.predict(image_path, normalizer=standardize)
 out.shape
 
-
-# %% id="4xJxR7Ddbd-0"
 fig = plt.figure(figsize=(12, 6))
 plotting.plot_roi(out, bg_img=image_path, alpha=0.4, vmin=0, vmax=5, figure=fig)
 
 
 # %% [markdown]
-# 1. Save model
-# 2. Load model back as a class instance
-# 3. Perform prediction
-# 4. Continue training
+# ## Save the trained model
 
 # %%
 bem.save("data/testsave")
 
+
+# %% [markdown]
+# ## Load the model from disk
+
 # %%
-from nobrainer.processing.segmentation import Segmentation
 bem = Segmentation.load("data/testsave")
+
+
+# %% [markdown]
+# ## Predict a brain mask from the loaded model (same as the saved model)
 
 # %%
 image_path = filepaths[0][0]
 out = bem.predict(image_path, normalizer=standardize)
 out.shape
+
+# %% [markdown]
+# ## Resume training from where we left off
 
 # %%
 bem.fit(dataset_train=dataset_train,
