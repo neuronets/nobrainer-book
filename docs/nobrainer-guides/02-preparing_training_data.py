@@ -33,7 +33,7 @@ import nobrainer
 # %% id="U1DD5tCh5tPk"
 csv_path = nobrainer.utils.get_data()
 filepaths = nobrainer.io.read_csv(csv_path)
-# !cat {csv}
+# !cat {csv_path}
 
 
 # %% [markdown]
