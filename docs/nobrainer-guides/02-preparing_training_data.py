@@ -19,8 +19,8 @@
 #
 # This tutorial will use a small publicly available dataset. To convert your own data, you will need to create a nested list of features and labels volumes (see below).
 
-# %% bash
-pip install --no-cache-dir nobrainer
+# %%
+# !pip install nobrainer
 
 # %% id="egda7m595tPi"
 import nobrainer
@@ -32,7 +32,7 @@ import nobrainer
 
 # %% id="U1DD5tCh5tPk"
 csv_path = nobrainer.utils.get_data()
-filepaths = nobrainer.io.read_csv(csv_of_filepaths)
+filepaths = nobrainer.io.read_csv(csv_path)
 # !cat {csv}
 
 
