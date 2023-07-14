@@ -76,6 +76,8 @@ dataset_train, dataset_eval = DT.from_files(paths=filepaths,
 # ## Construct a U-Net model
 # Here we'll train `nobrainer`'s implementation of the U-Net model for biomedical image segmentation, based on https://arxiv.org/abs/1606.06650.
 #
+# `nobrainer` provides several other segmentation models that could be used instead of `unet`. For a complete list, see [this list](https://github.com/neuronets/nobrainer#models).
+#
 # Note that a useful segmentation model would need to be trained on *many* more examples than the 10 we are using here for demonstration.
 
 # %% id="X8u_owicTa4T"
