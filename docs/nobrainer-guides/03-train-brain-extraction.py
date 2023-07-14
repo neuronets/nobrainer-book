@@ -14,7 +14,7 @@
 # ---
 
 # %% [markdown] id="ijHnNTIjDkt0"
-# # Train a neural network for binary volumetric brain mask segmentation
+# # Train a neural network for binary volumetric brain extraction
 #
 # In this notebook, we will use the `nobrainer` python API to train a model for brain extraction. Brain extraction is a common step in processing neuroimaging data. It is a voxel-wise, binary classification task, where each voxel is classified as brain or not brain.
 #
@@ -23,14 +23,13 @@
 # 1. Get sample T1-weighted MR scans as features and FreeSurfer segmentations as labels.
 #     - We will binarize the FreeSurfer segmentations to get a precise brainmask.
 # 2. Convert the data to TFRecords format for use with neural networks.
-# 3. Create two Datasets of the features and labels, one for training, one for evaluation.
-# 4. Instantiate a 3D convolutional neural network (U-Net).
+# 3. Create two `Datasets` of features and labels, one for training, one for evaluation.
+# 4. Instantiate a 3D convolutional neural network model for image segmentation (U-Net).
 # 5. Choose a loss function and metrics to use.
-# 6. Train on part of the data.
-# 7. Evaluate on the rest of the data.
-# 8. Predict a brain mask using the trained model.
-# 9. Save the model to disk for future prediction and/or training.
-# 10. Load the model back from disk and resume training.
+# 6. Train on part of the data and evaluate on the rest of the data.
+# 7. Predict a brain mask using the trained model.
+# 8. Save the model to disk for future prediction and/or training.
+# 9. Load the model back from disk and show that brain extraction works as before saaving.
 #
 #
 # ## Google Colaboratory
@@ -40,7 +39,7 @@
 
 # %% id="WhBnt2WdDlx9"
 # !pip install nobrainer nilearn
-# !export TF_CPP_MIN_LOG_LEVEL=2
+# !export TF_CPP_MIN_LOG_LEVEL=3
 
 # %% id="Ht_CGSk1Dkt3"
 import nobrainer
