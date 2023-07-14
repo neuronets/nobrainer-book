@@ -22,3 +22,10 @@ See the [scripts](scripts) directory for the guides in python format. These note
    How to obtain some example neuroimaging data and prepare it for neural network training.
 3. Train brain extraction ([notebook](notebooks/03-train_brain_extraction.ipynb), [python](scripts/03-train_brain_extraction.py))
    Train a standard brain extraction model on the example dataset.
+
+## Adding to the guide
+
+These guides are maintained in parallel using `jupytext`. Edits should be made to the python files in the [scripts](scripts) directory, then notebooks can be generated via
+```
+jupytext --sync scripts/<python-file>
+```
