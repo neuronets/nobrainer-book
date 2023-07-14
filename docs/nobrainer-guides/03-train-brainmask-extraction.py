@@ -16,22 +16,21 @@
 # %% [markdown] id="ijHnNTIjDkt0"
 # # Train a neural network for binary volumetric brain mask segmentation
 #
-# In this notebook, we will use `nobrainer` to train a model for brain extraction. Brain extraction is a common step in processing neuroimaging data. It is a voxel-wise, binary classification task, where each voxel is classified as brain or not brain.
+# In this notebook, we will use the `nobrainer` python API to train a model for brain extraction. Brain extraction is a common step in processing neuroimaging data. It is a voxel-wise, binary classification task, where each voxel is classified as brain or not brain.
 #
 # In the following cells, we will:
 #
 # 1. Get sample T1-weighted MR scans as features and FreeSurfer segmentations as labels.
 #     - We will binarize the FreeSurfer segmentations to get a precise brainmask.
-# 2. Convert the data to TFRecords format.
-# 3. Create two Datasets of the features and labels.
-#     - One dataset will be for training and the other will be for evaluation.
+# 2. Convert the data to TFRecords format for use with neural networks.
+# 3. Create two Datasets of the features and labels, one for training, one for evaluation.
 # 4. Instantiate a 3D convolutional neural network (U-Net).
 # 5. Choose a loss function and metrics to use.
 # 6. Train on part of the data.
 # 7. Evaluate on the rest of the data.
 # 8. Predict a brain mask using the trained model.
 # 9. Save the model to disk for future prediction and/or training.
-# 10. Load the model back, and resume training.
+# 10. Load the model back from disk and resume training.
 #
 #
 # ## Google Colaboratory
@@ -82,7 +81,7 @@ dataset_train, dataset_eval = DT.from_files(paths=filepaths,
 
 # %% [markdown]
 # ## Construct a U-Net model
-# Here we'll train nobrainer's implementation of the U-Net model for biomendical image segmentation, based on https://arxiv.org/abs/1606.06650.
+# Here we'll train `nobrainer`'s implementation of the U-Net model for biomedical image segmentation, based on https://arxiv.org/abs/1606.06650.
 #
 # Note that a useful segmentation model would need to be trained on *many* more examples than the 10 we are using here for demonstration.
 
@@ -109,7 +108,7 @@ history = bem.fit(dataset_train=dataset_train,
 
 # %% [markdown]
 # ## Use the trained model to predict a binary brain mask
-# The segmentation isn't good, but we knew it wasn't going to be.
+# The segmentation isn't great, but it's surprisingly good given the small dataset and short training.
 
 # %% id="OWqLu2xFTa4U"
 import matplotlib.pyplot as plt
@@ -121,38 +120,31 @@ out = bem.predict(image_path, normalizer=standardize)
 out.shape
 
 fig = plt.figure(figsize=(12, 6))
-plotting.plot_roi(out, bg_img=image_path, alpha=0.4, vmin=0, vmax=5, figure=fig)
+plotting.plot_roi(out, bg_img=image_path, cut_coords=(0, 10, -21), alpha=0.4, vmin=0, vmax=5, figure=fig)
 
 
 # %% [markdown]
 # ## Save the trained model
 
 # %%
-bem.save("data/testsave")
+bem.save("data/unet-brainmask-toy")
 
 
 # %% [markdown]
 # ## Load the model from disk
 
 # %%
-bem = Segmentation.load("data/testsave")
+bem = Segmentation.load("data/unet-brainmask-toy")
 
 
 # %% [markdown]
-# ## Predict a brain mask from the loaded model (same as the saved model)
+# ## Predict a brain mask from the loaded model
+# The brain mask is identical to that predicted before saving.
 
 # %%
 image_path = filepaths[0][0]
 out = bem.predict(image_path, normalizer=standardize)
 out.shape
 
-# %% [markdown]
-# ## Resume training from where we left off
-
-# %%
-bem.fit(dataset_train=dataset_train,
-        dataset_validate=dataset_eval,
-        epochs=1,
-        multi_gpu=True,
-        warm_start=True,
-       )
+fig = plt.figure(figsize=(12, 6))
+plotting.plot_roi(out, bg_img=image_path, cut_coords=(0, 10, -21), alpha=0.4, vmin=0, vmax=5, figure=fig)
