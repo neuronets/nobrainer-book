@@ -73,4 +73,4 @@ dataset_train, dataset_eval = DT.from_files(paths=filepaths,
 
 # %% [markdown]
 # You are now ready to train a model using this example dataset!
-# Next, learn how to [train a binary classification](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/ohinds-guide-api/docs/nobrainer-guides/03-train_binary_classification.ipynb)
+# Next, learn how to [train a brain mask classifier](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/ohinds-guide-api/docs/nobrainer-guides/03-train_binary_classification.ipynb)
