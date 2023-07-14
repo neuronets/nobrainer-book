@@ -16,7 +16,7 @@
 # %% [markdown] id="ijHnNTIjDkt0" pycharm={"name": "#%% md\n"}
 # # Train a neural network for binary volumetric brain mask segmentation
 #
-# In this notebook, we will use Nobrainer to train a model for brain extraction. Brain extraction is a common step in processing neuroimaging data. It is a voxel-wise, binary classification task, where each voxel is classified as brain or not brain.
+# In this notebook, we will use `nobrainer` to train a model for brain extraction. Brain extraction is a common step in processing neuroimaging data. It is a voxel-wise, binary classification task, where each voxel is classified as brain or not brain.
 #
 # In the following cells, we will:
 #
@@ -78,18 +78,31 @@ dataset_train, dataset_eval = DT.from_files(paths=filepaths,
 
 # %% [markdown]
 # ## Construct a U-Net model
-# Here we'll train nobrainer's implementation of the U-Net model for biomendical image segmentation, based on https://arxiv.org/abs/1606.06650. Note that a useful segmentation model would need to be trained on *many* more examples than the 10 we are using here for demonstration.
+# Here we'll train nobrainer's implementation of the U-Net model for biomendical image segmentation, based on https://arxiv.org/abs/1606.06650.
+#
+# After the model is constructed, a summary of the netowrk layers is printed.
+#
+# Note that a useful segmentation model would need to be trained on *many* more examples than the 10 we are using here for demonstration.
 
 # %% id="X8u_owicTa4T"
 from nobrainer.processing.segmentation import Segmentation
 from nobrainer.models import unet
 
 bem = Segmentation(unet, model_args=dict(batchnorm=True))
-bem.fit(dataset_train=dataset_train,
-        dataset_validate=dataset_eval,
-        epochs=n_epochs,
-        multi_gpu=True,
-       )
+
+
+# %% [markdown]
+# ## Train the model
+# Fit the data.
+#
+# Note that the loss function after training is very high, and the dice coefficient (a measure of the accuracy of the model) is very low, indicating that the model is not doing a good job of binary segmentation. This is expected, as this is a toy problem to demonstrate the API. During successful training of a more practical model, you would see the loss drop and the dice rise as training progressed.
+
+# %%
+history = bem.fit(dataset_train=dataset_train,
+                  dataset_validate=dataset_eval,
+                  epochs=n_epochs,
+                  multi_gpu=True,
+                  )
 
 
 # %% [markdown]
@@ -103,9 +116,11 @@ image_path = filepaths[0][0]
 out = bem.predict(image_path, normalizer=standardize)
 out.shape
 
+
 # %% id="4xJxR7Ddbd-0"
 fig = plt.figure(figsize=(12, 6))
 plotting.plot_roi(out, bg_img=image_path, alpha=0.4, vmin=0, vmax=5, figure=fig)
+
 
 # %% [markdown]
 # 1. Save model
