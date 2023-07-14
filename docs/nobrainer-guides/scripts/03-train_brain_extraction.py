@@ -16,15 +16,13 @@
 # In the following cells, we will:
 #
 # 1. Get sample T1-weighted MR scans as features and FreeSurfer segmentations as labels.
-#     - We will binarize the FreeSurfer segmentations to get a precise brainmask.
 # 2. Convert the data to TFRecords format for use with neural networks.
 # 3. Create two `Datasets` of features and labels, one for training, one for evaluation.
 # 4. Instantiate a 3D convolutional neural network model for image segmentation (U-Net).
-# 5. Choose a loss function and metrics to use.
-# 6. Train on part of the data and evaluate on the rest of the data.
-# 7. Predict a brain mask using the trained model.
-# 8. Save the model to disk for future prediction and/or training.
-# 9. Load the model back from disk and show that brain extraction works as before saaving.
+# 5. Train on part of the data and evaluate on the rest of the data.
+# 6. Predict a brain mask using the trained model.
+# 7. Save the model to disk for future prediction and/or training.
+# 8. Load the model back from disk and show that brain extraction works as before saving.
 #
 #
 # ## Google Colaboratory

@@ -83,18 +83,8 @@ import nobrainer
 #
 # The subsequent Jupyter notebooks in this guide demonstrate how to use `nobrainer` to prepare training data, train models, and more. These tutorial notebooks will be updated and enhanced regularly. If you think something is missing or could be improved, please [submit a GitHub issue](https://github.com/neuronets/helpdesk/issues/new/choose).
 #
-# ## Tutorials:
+# ## Guides:
 #
-# ### Training examples
+# - [Preparing training data](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/ohinds-guide-api/docs/nobrainer-guides/notebooks/02-preparing_training_data.ipynb)
+# - [Train brain extraction](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/ohinds-guide-api/docs/nobrainer-guides/notebooks/03-train_brain_extraction.ipynb)
 #
-# - [Preparing training data](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/ohinds-guide-api/docs/nobrainer-guides//02-preparing_training_data.ipynb)
-# - [Train binary classification](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/ohinds-guide-api/docs/nobrainer-guides//train_binary_classification.ipynb)
-# - [Train binary segmentation](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/ohinds-guide-api/docs/nobrainer-guides//train_binary_segmentation.ipynb)
-# - [Train/Use a progressive GAN](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/ohinds-guide-api/docs/nobrainer-guides//train_generation_progressive.ipynb)
-#
-# ### Inference examples
-#
-# - [Inference using kwyk](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/ohinds-guide-api/docs/nobrainer-guides//Inference_with_kwyk_model.ipynb)- [Train/Use a progressive GAN](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/ohinds-guide-api/docs/nobrainer-guides//train_generation_progressive.ipynb)
-#
-
-# %% id="Nf6LQLwcob5i"
