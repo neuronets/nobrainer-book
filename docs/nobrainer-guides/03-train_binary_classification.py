@@ -13,7 +13,7 @@
 #     name: python3
 # ---
 
-# %% [markdown] id="ijHnNTIjDkt0" pycharm={"name": "#%% md\n"}
+# %% [markdown] id="ijHnNTIjDkt0"
 # # Train a neural network for binary volumetric brain mask segmentation
 #
 # In this notebook, we will use `nobrainer` to train a model for brain extraction. Brain extraction is a common step in processing neuroimaging data. It is a voxel-wise, binary classification task, where each voxel is classified as brain or not brain.
