@@ -140,7 +140,7 @@ dataset_train
 dataset_evaluate
 
 # %% [markdown]
-# # Instantiate a neural network
+# # Instantiate a neural network fro brain mask extraction
 
 # %%
 model = nobrainer.models.unet(
@@ -149,28 +149,14 @@ model = nobrainer.models.unet(
     batchnorm=True,
 )
 
-# %%
-model.summary()
-
-# %% [markdown]
-# # Choose a loss function and metrics
-#
-# We have many choices of loss functions for binary segmentation. One can choose from binary crossentropy, Dice, Jaccard, Tversky, and many other loss functions.
-
-# %%
-import tensorflow as tf
-
-# %%
-optimizer = tf.keras.optimizers.Adam(learning_rate=1e-04)
-
 model.compile(
-    optimizer=optimizer,
+    optimizer='adam',
     loss=nobrainer.losses.dice,
     metrics=[nobrainer.metrics.dice, nobrainer.metrics.jaccard],
 )
 
 # %% [markdown]
-# # Train and evaluate model
+# # Train and evaluate the model
 #
 # $$
 # steps = \frac{nBlocks}{volume} * \frac{nVolumes}{batchSize}
@@ -195,9 +181,25 @@ validation_steps = nobrainer.dataset.get_steps_per_epoch(
 validation_steps
 
 # %%
-model.fit(
+history = model.fit(
     dataset_train,
     epochs=5,
     steps_per_epoch=steps_per_epoch,
     validation_data=dataset_evaluate,
     validation_steps=validation_steps)
+
+
+# %% [markdown]
+# ## Use the trained model to predict a binary brain mask
+
+# %%
+import matplotlib.pyplot as plt
+from nilearn import plotting
+from nobrainer.volume import standardize
+
+image_path = filepaths[0][0]
+out = model.predict(image_path, normalizer=standardize)
+out.shape
+
+fig = plt.figure(figsize=(12, 6))
+plotting.plot_roi(out, bg_img=image_path, cut_coords=(0, 10, -21), alpha=0.4, vmin=0, vmax=5, figure=fig)
