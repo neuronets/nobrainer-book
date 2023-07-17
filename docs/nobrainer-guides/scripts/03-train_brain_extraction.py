@@ -160,7 +160,7 @@ plotting.plot_roi(out, bg_img=image_path, cut_coords=(0, 10, -21), alpha=0.4, vm
 
 # %% id="X8u_owicTa4T"
 from nobrainer.models import meshnet
-bem = Segmentation(meshnet)
+bem = Segmentation(meshnet, model_args=dict(filters=25))
 
 
 # %% [markdown]
