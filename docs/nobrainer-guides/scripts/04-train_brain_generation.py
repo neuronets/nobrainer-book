@@ -135,7 +135,9 @@ def scale(x):
 
 # %% [markdown]
 # # Model fit
-# Note that the `epochs` parameter is superceded by the resolution-specific epochs we've modified above.
+# The fit progresses through the resolutions defined in `datasets`, from 8 to 256, doubling each resolution. Within each resolution, a transition and resolution phase of training is performed.
+#
+# Note that the `epochs` parameter to fit is superceded by the resolution-specific epochs we've modified above.
 
 # %%
 from nobrainer.processing.generation import ProgressiveGeneration
@@ -163,3 +165,8 @@ for img in images:
     plotting.plot_anat(anat_img=img, figure=fig, axes=ax[index],
                        draw_cross=False)
     index += 1
+
+# # Save model
+
+# %%
+gen.save("data/brain_generator")
