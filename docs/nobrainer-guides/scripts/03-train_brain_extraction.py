@@ -11,18 +11,19 @@
 # %% [markdown] id="ijHnNTIjDkt0"
 # # Train a neural network for binary volumetric brain extraction
 #
-# In this notebook, we will use the `nobrainer` python API to train a model for brain extraction. Brain extraction is a common step in processing neuroimaging data. It is a voxel-wise, binary classification task, where each voxel is classified as brain or not brain.
+# In this notebook, we will use the `nobrainer` python API to train two models for brain extraction. Brain extraction is a common step in processing neuroimaging data. It is a voxel-wise, binary classification task, where each voxel is classified as brain or not brain.
 #
 # In the following cells, we will:
 #
 # 1. Get sample T1-weighted MR scans as features and FreeSurfer segmentations as labels.
 # 2. Convert the data to TFRecords format for use with neural networks.
 # 3. Create two `Datasets` of features and labels, one for training, one for evaluation.
-# 4. Instantiate a 3D convolutional neural network model for image segmentation (U-Net).
+# 4. Instantiate a 3D convolutional neural network model for image segmentation called U-Net.
 # 5. Train on part of the data and evaluate on the rest of the data.
 # 6. Predict a brain mask using the trained model.
 # 7. Save the model to disk for future prediction and/or training.
 # 8. Load the model back from disk and show that brain extraction works as before saving.
+# 9. Demonstrate the same workflow using a different model for brain extraction called MeshNet.
 #
 #
 # ## Google Colaboratory
@@ -76,10 +77,10 @@ dataset_train, dataset_eval = DT.from_files(paths=filepaths,
 # # U-Net model for brain mask extraction
 
 # %% [markdown]
-# ## Construct a U-Net model
+# ## Construct the model
 # Here we'll train `nobrainer`'s implementation of the U-Net model for biomedical image segmentation, based on https://arxiv.org/abs/1606.06650.
 #
-# `nobrainer` provides several other segmentation models that could be used instead of `unet`. For a complete list, see [this list](https://github.com/neuronets/nobrainer#models).
+# `nobrainer` provides several other segmentation models that could be used instead of `unet`. Another example is provided at the bottom of this guide, and for a complete list, see [this list](https://github.com/neuronets/nobrainer#models).
 #
 # Note that a useful segmentation model would need to be trained on *many* more examples than the 10 we are using here for demonstration.
 
@@ -91,7 +92,7 @@ bem = Segmentation(unet, model_args=dict(batchnorm=True))
 
 
 # %% [markdown]
-# ## Train the U-Net model on the example data
+# ## Train the model on the example data
 # A summary of the model layers is printed before training starts.
 #
 # Note that the loss function after training is very high, and the dice coefficient (a measure of the accuracy of the model) is very low, indicating that the model is not doing a good job of binary segmentation. This is expected, as this is a toy problem to demonstrate the API. During successful training of a more practical model, you would see the loss drop and the dice rise as training progressed.
@@ -149,7 +150,7 @@ plotting.plot_roi(out, bg_img=image_path, cut_coords=(0, 10, -21), alpha=0.4, vm
 
 
 # %% [markdown]
-# # MeshNet model for brain mask extraction
+# # Another model for brain mask extraction
 
 # %% [markdown]
 # ## Construct a MeshNet model
@@ -157,14 +158,12 @@ plotting.plot_roi(out, bg_img=image_path, cut_coords=(0, 10, -21), alpha=0.4, vm
 
 # %% id="X8u_owicTa4T"
 from nobrainer.models import meshnet
-bem = Segmentation(meshnet, model_args=dict(n_classes=1, input_shape=(256, 256, 256)))
+bem = Segmentation(meshnet)
 
 
 # %% [markdown]
-# ## Train the U-Net model on the example data
+# ## Train the MeshNet model on the example data
 # A summary of the model layers is printed before training starts.
-#
-# Note that the loss function after training is very high, and the dice coefficient (a measure of the accuracy of the model) is very low, indicating that the model is not doing a good job of binary segmentation. This is expected, as this is a toy problem to demonstrate the API. During successful training of a more practical model, you would see the loss drop and the dice rise as training progressed.
 
 # %%
 history = bem.fit(dataset_train=dataset_train,
@@ -175,8 +174,7 @@ history = bem.fit(dataset_train=dataset_train,
 
 
 # %% [markdown]
-# ## Use the trained model to predict a binary brain mask
-# The segmentation is bad, but that isn't surprising given the small dataset and short training.
+# ## Use the trained MeshNet model to predict a binary brain mask
 
 # %% id="OWqLu2xFTa4U"
 import matplotlib.pyplot as plt
@@ -192,7 +190,7 @@ plotting.plot_roi(out, bg_img=image_path, cut_coords=(0, 10, -21), alpha=0.4, vm
 
 
 # %% [markdown]
-# ## Save the trained model
+# ## Save the MeshNet model
 
 # %%
 bem.save("data/meshnet-brainmask-toy")
