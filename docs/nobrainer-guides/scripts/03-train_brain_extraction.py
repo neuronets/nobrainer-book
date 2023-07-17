@@ -143,7 +143,6 @@ bem = Segmentation.load("data/unet-brainmask-toy")
 # The brain mask is identical to that predicted before saving.
 
 # %%
-image_path = filepaths[0][0]
 out = bem.predict(image_path, normalizer=standardize)
 out.shape
 
@@ -179,11 +178,6 @@ history = bem.fit(dataset_train=dataset_train,
 # ## Use the trained MeshNet model to predict a binary brain mask
 
 # %% id="OWqLu2xFTa4U"
-import matplotlib.pyplot as plt
-from nilearn import plotting
-from nobrainer.volume import standardize
-
-image_path = filepaths[0][0]
 out = bem.predict(image_path, normalizer=standardize)
 out.shape
 
