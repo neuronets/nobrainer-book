@@ -29,7 +29,9 @@
 # ## Google Colaboratory
 #
 # If you are using Colab, please switch your runtime to GPU. To do this, select `Runtime > Change runtime type` in the top menu. Then select GPU under `Hardware accelerator`. A GPU greatly speeds up training.
-
+#
+#
+# # Install and setup `nobrainer`
 
 # %% id="WhBnt2WdDlx9"
 # !pip install nobrainer nilearn
