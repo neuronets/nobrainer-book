@@ -77,27 +77,53 @@ datasets = write_multi_resolution(train_paths,
 print(datasets)
 
 # %% [markdown]
-# The datasets will look like the following. One can adjust the `batch size` depending on compute power and available GPUs, but also epochs and normalizers.
+# # Prepare for training
+
+# %% [markdown]
+# ## Hyperparameters
+#
+# The datasets have the following structure. One can adjust the `batch size` depending on compute power and available GPUs, but also epochs and normalizers.
+#
+# ```python
+# datasets = {8: {'file_pattern': 'data/generate/*res-008.tfrec',
+#   'batch_size': 1,
+#   'normalizer': None},
+#  16: {'file_pattern': 'data/generate/*res-016.tfrec',
+#   'batch_size': 1,
+#   'normalizer': None},
+#  32: {'file_pattern': 'data/generate/*res-032.tfrec',
+#   'batch_size': 1,
+#   'normalizer': None},
+#  64: {'file_pattern': 'data/generate/*res-064.tfrec',
+#   'batch_size': 1,
+#   'normalizer': None},
+#  128: {'file_pattern': 'data/generate/*res-128.tfrec',
+#   'batch_size': 1,
+#   'normalizer': None},
+#  256: {'file_pattern': 'data/generate/*res-256.tfrec',
+#   'batch_size': 1,
+#   'normalizer': None}}
+# ```
+#
+# With this in mind, we can set the numbers of training epochs and the batch size for each resolution manually.
 
 # %%
-datasets = {8: {'file_pattern': 'data/generate/*res-008.tfrec',
-                'batch_size': 1,
-                'normalizer': None},
-            16: {'file_pattern': 'data/generate/*res-016.tfrec',
-                 'batch_size': 1,
-                 'normalizer': None},
-            32: {'file_pattern': 'data/generate/*res-032.tfrec',
-                 'batch_size': 1,
-                 'normalizer': None},
-            64: {'file_pattern': 'data/generate/*res-064.tfrec',
-                 'batch_size': 1,
-                 'normalizer': None},
-            128: {'file_pattern': 'data/generate/*res-128.tfrec',
-                  'batch_size': 1,
-                  'normalizer': None},
-            256: {'file_pattern': 'data/generate/*res-256.tfrec',
-                  'batch_size': 1,
-                  'normalizer': None}}
+# Adjust number of epochs
+datasets[8]['epochs'] = 1000
+datasets[16]['epochs'] = 1000
+datasets[32]['epochs'] = 400
+datasets[64]['epochs'] = 200
+
+# Adjust batch size from the default of 1
+datasets[8]['batch_size'] = 8
+datasets[16]['batch_size'] = 8
+datasets[32]['batch_size'] = 8
+datasets[64]['batch_size'] = 4
+
+
+# %% [markdown]
+# ## Data normalization
+# The generative model expects inputs (and produces outputs) in the range [-1. 1]. Here we use `nobrainer`'s volume processing utilities to convert the input volumes to that range
 
 # %%
 from nobrainer.volume import normalize, adjust_dynamic_range
@@ -106,32 +132,23 @@ def scale(x):
     """Scale data to -1 to 1"""
     return adjust_dynamic_range(normalize(x), [0, 1], [-1, 1])
 
-# Adjust number of epochs
-datasets[8]["epochs"] = 1000
-datasets[16]["epochs"] = 1000
-datasets[32]["epochs"] = 400
-datasets[64]["epochs"] = 200
 
-# Adjust batch size from the default of 1
-datasets[8]["batch_size"] = 8
-datasets[16]["batch_size"] = 8
-datasets[32]["batch_size"] = 8
-datasets[64]["batch_size"] = 4
+# %% [markdown]
+# # Model fit
+# Note that the `epochs` parameter is superceded by the resolution-specific epochs we've modified above.
 
 # %%
 from nobrainer.processing.generation import ProgressiveGeneration
 gen = ProgressiveGeneration()
-
-# %%
-# epochs and normalizer can be overwritten by resolution specific settings in datasets
 gen.fit(datasets,
         epochs=10,
         normalizer=scale)
 
+
 # %% [markdown]
-# #### Scale output to uint16
+# # Generate synthetic brain images from the trained PGAN model
 #
-# One can return the native datatype by not passing a `data_type` argument.
+# Note that one can return the native datatype by not passing a `data_type` argument. In this case, we want voxel values in the range [0, 255].
 
 # %%
 from nilearn import plotting
@@ -146,23 +163,3 @@ for img in images:
     plotting.plot_anat(anat_img=img, figure=fig, axes=ax[index],
                        draw_cross=False)
     index += 1
-
-# %% [markdown]
-# #### Warm restart at the last resolution
-#
-# We can warm start the training, but for the moment it will only retrain using the final resolution of the data or higher. This can be used to:
-# - split different resolution phases
-# - use different datasets for different resolutions
-# - fine tune on a specific dataset.
-
-# %%
-gen.fit(datasets, warm_start=True)
-
-# %% [markdown]
-# ### Save model
-
-# %%
-gen.save("data/saved_gen_model")
-
-# %% [markdown]
-# ### TODO: Load and reuse model
