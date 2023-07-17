@@ -166,6 +166,7 @@ for img in images:
                        draw_cross=False)
     index += 1
 
+# %% [markdown]
 # # Save model
 
 # %%
