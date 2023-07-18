@@ -106,7 +106,7 @@ num_parallel_calls = 2
 from nobrainer.intensity_transforms import addGaussianNoise
 from nobrainer.spatial_transforms import randomflip_leftright
 
-augment = [(addGaussianNoise, {'noise_mean':0.1,'noise_std':0.5}), (randomflip_leftright)]
+augment = [(addGaussianNoise, {'noise_mean':0.1,'noise_std':0.5}), (randomflip_leftright, {})]
 
 # %%
 dataset_train = nobrainer.dataset.get_dataset(
@@ -128,7 +128,7 @@ dataset_evaluate = nobrainer.dataset.get_dataset(
     volume_shape=volume_shape,
     block_shape=block_shape,
     n_epochs=1,
-    augment=False,
+    augment=None,
     shuffle_buffer_size=None,
     num_parallel_calls=1,
 )
