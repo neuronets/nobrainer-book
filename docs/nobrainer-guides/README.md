@@ -6,7 +6,7 @@ This set of guides demonstrates basic usage of the `nobrainer` python API to tra
 
 These guides are available in both jupyter notebook versions and as standalone python scripts.
 
-### Jupyter notebooks [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/neuronets/nobrainer)
+### Jupyter notebooks [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/master)
 
 
 See the [notebooks](notebooks) directory for the guides in jupyter notebook format. These notebooks can be run for free on Google Colab, accessed [here](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/master).
