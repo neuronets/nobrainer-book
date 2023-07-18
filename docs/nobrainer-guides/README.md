@@ -8,7 +8,7 @@ These guides are available in both jupyter notebook versions and as standalone p
 
 ### Jupyter notebooks
 
-See the [notebooks](notebooks) directory for the guides in jupyter notebook format. These notebooks can be run for free on Google Colab, accessed [here](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/ohinds-guide-api).
+See the [notebooks](notebooks) directory for the guides in jupyter notebook format. These notebooks can be run for free on Google Colab, accessed [here](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/master).
 
 ### Standalone python scripts
 
