@@ -173,4 +173,4 @@ for img in images:
 gen.save("data/brain_generator")
 
 # %% [markdown]
-# Next, learn how to [use augmentatation to train models with less data](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/master/docs/nobrainer-guides/05-training_with_augmentation.ipynb)
+# Next, learn how to [use augmentatation to train models with less data](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/master/docs/nobrainer-guides/notebooks/05-training_with_augmentation.ipynb)
