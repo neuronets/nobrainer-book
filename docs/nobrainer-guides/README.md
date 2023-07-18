@@ -22,6 +22,10 @@ See the [scripts](scripts) directory for the guides in python format. These note
    How to obtain some example neuroimaging data and prepare it for neural network training.
 3. Train brain extraction ([notebook](notebooks/03-train_brain_extraction.ipynb), [python](scripts/03-train_brain_extraction.py))
    Train a standard brain extraction model on the example dataset.
+4. Train brain volume generation ([notebook](notebooks/04-train_brain_generation.ipynb), [python](scripts/03-train_brain_generation.py))
+   Train a model to generate synthetic brain volumes on the example dataset.
+5. Augmentation of training data ([notebook](notebooks/05-training_with_augmentation.ipynb), [python](scripts/05-training_with_augmentation.py))
+   Use augmented training data to train a standard brain extraction model on the example dataset.
 
 ## Adding to the guide
 
