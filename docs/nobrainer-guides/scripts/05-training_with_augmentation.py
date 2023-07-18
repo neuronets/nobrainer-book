@@ -15,7 +15,7 @@
 # %% [markdown]
 # # Training a segmentation model with data augmentation
 #
-# In this notebook, we will demonstrate how to train a brain mask extraction model using `nobrainer` with training data augmentation. Augmentation is useful for improving the robustness of neural network models when a limited amount of training examples are available. The basic idea is that, by applying certain transformations to the training data prior to feeding it through the model, one can expand the input space to cover situations unaccounted for in the base training set.
+# In this notebook, we will demonstrate how to train a brain mask extraction model using `nobrainer` with training data augmentation. Augmentation is useful for improving the robustness of neural network models when a limited amount of training examples are available. The basic idea is that, by applying certain transformations to the training data prior to fitting the model, one can expand the input space to cover situations unaccounted for in the base training set.
 #
 # Nobrainer provides several methods of augmenting volumetric data including spatial and intensity transforms.
 #
@@ -53,47 +53,26 @@ import nobrainer
 csv_of_filepaths = nobrainer.utils.get_data()
 filepaths = nobrainer.io.read_csv(csv_of_filepaths)
 
-train_paths = filepaths[:9]
-evaluate_paths = filepaths[9:]
+# %% id="YpqTxNu4Dkt4"
+csv_path = nobrainer.utils.get_data()
+filepaths = nobrainer.io.read_csv(csv_path)
 
-# %% [markdown]
+
+# %% [markdown] id="ScgF78rmDkt4"
 # # Convert medical images to TFRecords
-# invalid = nobrainer.io.verify_features_labels(train_paths)
-# assert not invalid
-#
-# invalid = nobrainer.io.verify_features_labels(evaluate_paths)
-# assert not invalid
+
+# %% id="n7lCL-55Ta4R"
+from nobrainer.dataset import Dataset
 
 
-# %%
-# !mkdir -p data
-
-# %%
-# Convert training and evaluation data to TFRecords.
-nobrainer.tfrecord.write(
-    features_labels=train_paths,
-    filename_template='data/data-train_shard-{shard:03d}.tfrec',
-    examples_per_shard=3)
-
-nobrainer.tfrecord.write(
-    features_labels=evaluate_paths,
-    filename_template='data/data-evaluate_shard-{shard:03d}.tfrec',
-    examples_per_shard=1)
-
-# %%
-# !ls data
-
-# %% [markdown]
-# # Create Datasets
-
-# %%
-n_classes = 1
-batch_size = 2
-volume_shape = (256, 256, 256)
-block_shape = (32, 32, 32)
-n_epochs = None
-shuffle_buffer_size = 10
-num_parallel_calls = 2
+# %% id="Q3zPyRlbTa4R"
+n_epochs = 2
+DT = Dataset(
+    n_classes=1,
+    batch_size=2,
+    block_shape=(128, 128, 128),
+    n_epochs=n_epochs,
+)
 
 # %% [markdown]
 # # Augmentation
@@ -105,88 +84,41 @@ num_parallel_calls = 2
 # %%
 from nobrainer.intensity_transforms import addGaussianNoise
 from nobrainer.spatial_transforms import randomflip_leftright
-
-augment = [(addGaussianNoise, {'noise_mean':0.1,'noise_std':0.5}), (randomflip_leftright, {})]
+augment = [
+    (addGaussianNoise, {'noise_mean': 0.1, 'noise_std': 0.5}),
+    (randomflip_leftright, {}),
+]
 
 # %%
-dataset_train = nobrainer.dataset.get_dataset(
-    file_pattern='data/data-train_shard-*.tfrec',
-    n_classes=n_classes,
-    batch_size=batch_size,
-    volume_shape=volume_shape,
-    block_shape=block_shape,
-    n_epochs=n_epochs,
+dataset_train, dataset_eval = DT.from_files(
+    paths=filepaths,
+    eval_size=0.1,
+    tfrecdir="data/binseg",
+    shard_size=3,
     augment=augment,
-    shuffle_buffer_size=shuffle_buffer_size,
-    num_parallel_calls=num_parallel_calls,
+    shuffle_buffer_size=10,
+    num_parallel_calls=None,
 )
-
-dataset_evaluate = nobrainer.dataset.get_dataset(
-    file_pattern='data/data-evaluate_shard-*.tfrec',
-    n_classes=n_classes,
-    batch_size=batch_size,
-    volume_shape=volume_shape,
-    block_shape=block_shape,
-    n_epochs=1,
-    augment=None,
-    shuffle_buffer_size=None,
-    num_parallel_calls=1,
-)
-
-# %%
-dataset_train
-
-# %%
-dataset_evaluate
 
 # %% [markdown]
 # # Instantiate a neural network fro brain mask extraction
 
 # %%
-model = nobrainer.models.unet(
-    n_classes=n_classes,
-    input_shape=(*block_shape, 1),
-    batchnorm=True,
-)
+from nobrainer.processing.segmentation import Segmentation
+from nobrainer.models import unet
+model = Segmentation(unet, model_args=dict(batchnorm=True))
 
-model.compile(
-    optimizer='adam',
-    loss=nobrainer.losses.dice,
-    metrics=[nobrainer.metrics.dice, nobrainer.metrics.jaccard],
-)
 
 # %% [markdown]
 # # Train and evaluate the model
 #
-# $$
-# steps = \frac{nBlocks}{volume} * \frac{nVolumes}{batchSize}
-# $$
-
-# %%
-steps_per_epoch = nobrainer.dataset.get_steps_per_epoch(
-    n_volumes=len(train_paths),
-    volume_shape=volume_shape,
-    block_shape=block_shape,
-    batch_size=batch_size)
-
-steps_per_epoch
-
-# %%
-validation_steps = nobrainer.dataset.get_steps_per_epoch(
-    n_volumes=len(evaluate_paths),
-    volume_shape=volume_shape,
-    block_shape=block_shape,
-    batch_size=batch_size)
-
-validation_steps
 
 # %%
 history = model.fit(
-    dataset_train,
-    epochs=5,
-    steps_per_epoch=steps_per_epoch,
-    validation_data=dataset_evaluate,
-    validation_steps=validation_steps)
+    dataset_train=dataset_train,
+    dataset_validate=dataset_eval,
+    epochs=n_epochs,
+)
 
 
 # %% [markdown]
@@ -202,4 +134,12 @@ out = model.predict(image_path, normalizer=standardize)
 out.shape
 
 fig = plt.figure(figsize=(12, 6))
-plotting.plot_roi(out, bg_img=image_path, cut_coords=(0, 10, -21), alpha=0.4, vmin=0, vmax=5, figure=fig)
+plotting.plot_roi(
+    out,
+    bg_img=image_path,
+    cut_coords=(0, 10, -21),
+    alpha=0.4,
+    vmin=0,
+    vmax=5,
+    figure=fig,
+)
