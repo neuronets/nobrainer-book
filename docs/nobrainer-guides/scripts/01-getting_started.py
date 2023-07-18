@@ -31,7 +31,7 @@
 #
 # ## Google Colaboratory
 #
-# These notebooks can be [run for free](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/ohinds-guide-api) on Google Colaboratory (you must be signed into a Google account). If you are using Colab, please note that multiple open tabs of Colab notebooks will use the same resources (RAM, GPU). Downloading data in multiple Colab notebooks at the same time or training multiple models can quickly exhaust the available resources. For this reason, please run one notebook at a time, and keep an eye on the resources used.
+# These notebooks can be [run for free](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/master) on Google Colaboratory (you must be signed into a Google account). If you are using Colab, please note that multiple open tabs of Colab notebooks will use the same resources (RAM, GPU). Downloading data in multiple Colab notebooks at the same time or training multiple models can quickly exhaust the available resources. For this reason, please run one notebook at a time, and keep an eye on the resources used.
 #
 # Users can choose to run Colab notebooks on CPU, GPU, or TPU. By default, the notebooks will use the CPU runtime. To use a different runtime, please select `Runtime > Change runtime type` in the menu bar. Then, choose either `GPU` or `TPU` under `Hardware accelerator`. No code changes are required when running on CPU or GPU runtime. When using the TPU runtime, however, special care must be taken for things to work properly. Please refer to the TPU guide notebook in this directory for more information.
 #
@@ -81,10 +81,6 @@ import nobrainer
 # %% [markdown] id="VG0lFj2gq5ag"
 # # Next steps
 #
-# The subsequent Jupyter notebooks in this guide demonstrate how to use `nobrainer` to prepare training data, train models, and more. These tutorial notebooks will be updated and enhanced regularly. If you think something is missing or could be improved, please [submit a GitHub issue](https://github.com/neuronets/helpdesk/issues/new/choose).
+# The subsequent notebooks in this guide demonstrate how to use `nobrainer` to prepare training data, train models, and more. These tutorial notebooks will be updated and enhanced regularly. If you think something is missing or could be improved, please [submit a GitHub issue](https://github.com/neuronets/helpdesk/issues/new/choose).
 #
-# ## Guides:
-#
-# - [Preparing training data](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/ohinds-guide-api/docs/nobrainer-guides/notebooks/02-preparing_training_data.ipynb)
-# - [Train brain extraction](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/ohinds-guide-api/docs/nobrainer-guides/notebooks/03-train_brain_extraction.ipynb)
-#
+# Now, learn how to [prepare data for training](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/master/docs/nobrainer-guides/02-preparing_training_data.py)

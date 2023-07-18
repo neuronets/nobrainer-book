@@ -192,3 +192,6 @@ plotting.plot_roi(out, bg_img=image_path, cut_coords=(0, 10, -21), alpha=0.4, vm
 
 # %%
 bem.save("data/meshnet-brainmask-toy")
+
+# %% [markdown]
+# Next, learn how to [train a brain volume generation model](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/master/docs/nobrainer-guides/04-train_brain_generation.ipynb)
