@@ -106,7 +106,7 @@ dataset_train, dataset_eval = DT.from_files(
 # %%
 from nobrainer.processing.segmentation import Segmentation
 from nobrainer.models import unet
-model = Segmentation(unet, model_args=dict(batchnorm=True))
+model = Segmentation(unet, model_args=dict(batchnorm=True), multi_gpu=True)
 
 
 # %% [markdown]

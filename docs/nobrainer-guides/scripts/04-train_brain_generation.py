@@ -69,9 +69,11 @@ train_paths = filepaths[:9]
 from nobrainer.dataset import write_multi_resolution
 
 # %%
-datasets = write_multi_resolution(train_paths,
-                                  tfrecdir="data/generate",
-                                  n_processes=None)
+datasets = write_multi_resolution(
+    train_paths,
+    tfrecdir="data/generate",
+    n_processes=None
+)
 
 # %%
 print(datasets)
@@ -141,10 +143,12 @@ def scale(x):
 
 # %%
 from nobrainer.processing.generation import ProgressiveGeneration
-gen = ProgressiveGeneration()
-gen.fit(datasets,
-        epochs=10,
-        normalizer=scale)
+gen = ProgressiveGeneration(multi_gpu=True)
+gen.fit(
+    datasets,
+    epochs=10,
+    normalizer=scale,
+)
 
 
 # %% [markdown]

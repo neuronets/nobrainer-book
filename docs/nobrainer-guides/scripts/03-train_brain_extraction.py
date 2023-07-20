@@ -92,7 +92,7 @@ dataset_train, dataset_eval = DT.from_files(paths=filepaths,
 from nobrainer.processing.segmentation import Segmentation
 from nobrainer.models import unet
 
-bem = Segmentation(unet, model_args=dict(batchnorm=True))
+bem = Segmentation(unet, model_args=dict(batchnorm=True), multi_gpu=True)
 
 
 # %% [markdown]
@@ -102,11 +102,11 @@ bem = Segmentation(unet, model_args=dict(batchnorm=True))
 # Note that the loss function after training is very high, and the dice coefficient (a measure of the accuracy of the model) is very low, indicating that the model is not doing a good job of binary segmentation. This is expected, as this is a toy problem to demonstrate the API. During successful training of a more practical model, you would see the loss drop and the dice rise as training progressed.
 
 # %%
-history = bem.fit(dataset_train=dataset_train,
-                  dataset_validate=dataset_eval,
-                  epochs=n_epochs,
-                  multi_gpu=True,
-                  )
+history = bem.fit(
+    dataset_train=dataset_train,
+    dataset_validate=dataset_eval,
+    epochs=n_epochs,
+)
 
 
 # %% [markdown]
@@ -172,7 +172,6 @@ bem = Segmentation(meshnet, model_args=dict(filters=25))
 history = bem.fit(dataset_train=dataset_train,
                   dataset_validate=dataset_eval,
                   epochs=n_epochs,
-                  multi_gpu=True,
                   )
 
 
