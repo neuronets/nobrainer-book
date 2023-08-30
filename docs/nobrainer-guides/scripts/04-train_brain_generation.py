@@ -13,6 +13,14 @@
 # ---
 
 # %% [markdown] id="jlHhhplL7opm"
+# # THIS NOTEBOOK IS DISABLED WHILE GENERATIVE MODELS ARE REWORKED
+#
+
+# %%
+import sys
+sys.exit(0)
+
+# %% [markdown] id="jlHhhplL7opm"
 # # Train a neural network to generate realistic brain volumes
 #
 # In this notebook, we will use `nobrainer` to train a model for generation of realistic, synthetic brain MRI volumes. We will use a Generative Adversarial Network to model the generation and use a progressive growing training method for high quality generation at higher resolutions.
