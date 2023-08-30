@@ -77,7 +77,9 @@ dataset_train.\
     repeat(n_epochs).\
     shuffle(10)
 
-dataset_eval.block((128, 128, 128))
+dataset_eval\
+    .block((128, 128, 128))\
+    .batch(1)
 
 
 # %% [markdown]
