@@ -63,22 +63,18 @@ from nobrainer.dataset import Dataset
 
 # %% id="Q3zPyRlbTa4R"
 n_epochs = 2
-DT = Dataset(
+dataset_train, dataset_eval = Dataset.from_files(
+    filepaths,
+    out_tfrec_dir="data/binseg",
+    shard_size=3,
+    num_parallel_calls=None,
     n_classes=1,
-    batch_size=2,
     block_shape=(128, 128, 128),
-    n_epochs=n_epochs,
 )
 
-dataset_train, dataset_eval = DT.from_files(
-    paths=filepaths,
-    eval_size=0.1,
-    tfrecdir="data/binseg",
-    shard_size=3,
-    augment=None,
-    shuffle_buffer_size=10,
-    num_parallel_calls=None,
-)
+dataset_train.\
+    repeat(n_epochs).\
+    shuffle(10)
 
 
 # %% [markdown]

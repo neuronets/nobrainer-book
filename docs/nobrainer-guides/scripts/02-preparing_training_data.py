@@ -51,18 +51,18 @@ plotting.plot_roi(filepaths[0][1], bg_img=filepaths[0][0], alpha=0.4, vmin=0, vm
 from nobrainer.dataset import Dataset
 
 n_epochs = 2
-DT = Dataset(n_classes=1,
-             batch_size=2,
-             block_shape=(128, 128, 128),
-             n_epochs=n_epochs)
+dataset_train, dataset_eval = Dataset.from_files(
+    filepaths,
+    out_tfrec_dir="data/binseg",
+    shard_size=3,
+    num_parallel_calls=None,
+    n_classes=1,
+    block_shape=(128, 128, 128),
+)
 
-dataset_train, dataset_eval = DT.from_files(paths=filepaths,
-                                            eval_size=0.1,
-                                            tfrecdir="data/binseg",
-                                            shard_size=3,
-                                            augment=None,
-                                            shuffle_buffer_size=10,
-                                            num_parallel_calls=None)
+dataset_train.\
+    repeat(n_epochs).\
+    shuffle(10)
 
 
 # %% [markdown]
