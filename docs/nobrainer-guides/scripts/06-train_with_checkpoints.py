@@ -82,6 +82,8 @@ dataset_train.\
 
 # %% [markdown]
 # ## Construct the model
+# Set up the model to train in sessions, resuming from checkpoints each time. If no checkpoints exist in the specified location, training starts fresh.
+#
 # Here we'll train `nobrainer`'s implementation of the U-Net model for biomedical image segmentation, based on https://arxiv.org/abs/1606.06650.
 #
 # `nobrainer` provides several other segmentation models that could be used instead of `unet`. Another example is provided at the bottom of this guide, and for a complete list, see [this list](https://github.com/neuronets/nobrainer#models).
@@ -92,10 +94,12 @@ dataset_train.\
 from nobrainer.processing.segmentation import Segmentation
 from nobrainer.models import unet
 
-bem = Segmentation(
+model_dir = "brain_mask_extraction_model"
+checkpoint_filepath = os.path.join(model_dir, "checkpoints", "epoch_{epoch:03d}")
+bem = Segmentation.init_with_checkpoints(
     unet,
     model_args=dict(batchnorm=True),
-    multi_gpu=True,
+    checkpoint_filepath=checkpoint_filepath,
 )
 
 
@@ -139,17 +143,34 @@ plotting.plot_roi(
 
 
 # %% [markdown]
-# ## Save the trained model
+# ## Train the model a bit more, picking up where the last training session left off.
+# This paradigm is useful in situations where training takes a long time and compute resources may be preemptable or available in chunks.
 
 # %%
-bem.save("data/unet-brainmask-toy")
+bem = Segmentation.init_with_checkpoints(
+    unet,
+    model_args=dict(batchnorm=True),
+    checkpoint_filepath=checkpoint_filepath,
+)
+history = bem.fit(
+    dataset_train=dataset_train,
+    dataset_validate=dataset_eval,
+    epochs=n_epochs,
+)
 
 
 # %% [markdown]
-# ## Load the model from disk
+# ## Save the trained model
 
 # %%
-bem = Segmentation.load("data/unet-brainmask-toy")
+bem.save(model_dir)
+
+
+# %% [markdown]
+# ## Load the model from disk for prediction.
+
+# %%
+bem = Segmentation.load(model_dir)
 
 
 # %% [markdown]
@@ -170,60 +191,3 @@ plotting.plot_roi(
     vmax=5,
     figure=fig,
 )
-
-
-# %% [markdown]
-# # Another model for brain mask extraction
-
-# %% [markdown]
-# ## Construct a MeshNet model
-# Here we'll train `nobrainer`'s implementation of the MeshNet model for biomedical image segmentation, based on https://arxiv.org/abs/1612.00940).
-
-# %% id="X8u_owicTa4T"
-from nobrainer.models import meshnet
-bem = Segmentation(
-    meshnet,
-    model_args=dict(filters=25),
-    multi_gpu=True,
-)
-
-
-# %% [markdown]
-# ## Train the MeshNet model on the example data
-# A summary of the model layers is printed before training starts.
-
-# %%
-history = bem.fit(
-    dataset_train=dataset_train,
-    dataset_validate=dataset_eval,
-    epochs=n_epochs,
-)
-
-
-# %% [markdown]
-# ## Use the trained MeshNet model to predict a binary brain mask
-
-# %% id="OWqLu2xFTa4U"
-out = bem.predict(image_path, normalizer=standardize)
-out.shape
-
-fig = plt.figure(figsize=(12, 6))
-plotting.plot_roi(
-    out,
-    bg_img=image_path,
-    cut_coords=(0, 10, -21),
-    alpha=0.4,
-    vmin=0,
-    vmax=5,
-    figure=fig,
-)
-
-
-# %% [markdown]
-# ## Save the MeshNet model
-
-# %%
-bem.save("data/meshnet-brainmask-toy")
-
-# %% [markdown]
-# Next, learn how to [train a brain volume generation model](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/master/docs/nobrainer-guides/notebooks/04-train_brain_generation.ipynb)
