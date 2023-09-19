@@ -142,3 +142,6 @@ plotting.plot_roi(
     vmax=5,
     figure=fig,
 )
+
+# %% [markdown]
+# Next, learn how to [train models using resumable checkpoints](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/master/docs/nobrainer-guides/notebooks/06-train_with_checkpoints.ipynb)
