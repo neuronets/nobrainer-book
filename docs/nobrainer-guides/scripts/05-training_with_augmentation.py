@@ -77,8 +77,9 @@ dataset_train, dataset_eval = Dataset.from_files(
 )
 
 dataset_train.\
-    repeat(n_epochs).\
-    shuffle(10)
+    shuffle(10).\
+    repeat(n_epochs)
+    
 
 
 # %% [markdown]
