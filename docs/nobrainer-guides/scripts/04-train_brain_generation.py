@@ -5,22 +5,17 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.14.7
+#       jupytext_version: 1.16.1
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
 
-# %% [markdown] id="jlHhhplL7opm"
-# # THIS NOTEBOOK IS DISABLED WHILE GENERATIVE MODELS ARE REWORKED
+# %% [markdown]
 #
-
-# %%
-import sys
-sys.exit(0)
-
-# %% [markdown] id="jlHhhplL7opm"
+# <a href="https://colab.research.google.com/github/neuronets/nobrainer-book/blob/master/docs/nobrainer-guides/notebooks/04-train_brain_generation.ipynb" target="_parent"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
+#
 # # Train a neural network to generate realistic brain volumes
 #
 # In this notebook, we will use `nobrainer` to train a model for generation of realistic, synthetic brain MRI volumes. We will use a Generative Adversarial Network to model the generation and use a progressive growing training method for high quality generation at higher resolutions.
@@ -35,40 +30,38 @@ sys.exit(0)
 # 6. Train on part of the data in two phases (transition and resolution).
 # 7. Repeat steps 4-6 for each growing resolution.
 # 8. Generate some images using trained model
-
-# %% [markdown]
+#
 # ## Google Colaboratory
 #
 # If you are using Colab, please switch your runtime to GPU. To do this, select `Runtime > Change runtime type` in the top menu. Then select GPU under `Hardware accelerator`. A GPU greatly speeds up training.
-
-
-# %% [markdown]
+#
 # # Install and setup `nobrainer`
 
-# %% id="sUwl5vYH7rrD"
-# !pip install --no-cache-dir nilearn nobrainer
+# %%
+pip install --no-cache-dir nilearn nobrainer
+
 
 # %%
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
 
-# %% id="Qpm8u9O47opq"
+
+# %%
 import nobrainer
 
-
-# %% [markdown] id="QAl3sk8e7opr"
+# %% [markdown]
 # # Get sample features and labels
 #
 # We use 9 pairs of volumes for training and 1 pair of volumes for evaluation. Many more volumes would be required to train a model for any useful purpose.
 
-# %% id="yV9F64HE7opr"
+# %%
 csv_of_filepaths = nobrainer.utils.get_data()
 filepaths = nobrainer.io.read_csv(csv_of_filepaths)
 
 train_paths = filepaths[:9]
 
-# %% [markdown] id="jqzlAmyI7ops"
+# %% [markdown]
 # # Convert medical images to TFRecords
 #
 # Remember how many full volumes are in the TFRecords files. This will be necessary to know how many steps are in on training epoch. The default training method needs to know this number, because Datasets don't always know how many items they contain.
@@ -76,18 +69,19 @@ train_paths = filepaths[:9]
 # %%
 from nobrainer.dataset import write_multi_resolution
 
+
 # %%
 datasets = write_multi_resolution(train_paths,
                                   tfrecdir="data/generate",
                                   n_processes=None)
+
 
 # %%
 print(datasets)
 
 # %% [markdown]
 # # Prepare for training
-
-# %% [markdown]
+#
 # ## Hyperparameters
 #
 # The datasets have the following structure. One can adjust the `batch size` depending on compute power and available GPUs, but also epochs and normalizers.
@@ -128,7 +122,6 @@ datasets[16]['batch_size'] = 8
 datasets[32]['batch_size'] = 8
 datasets[64]['batch_size'] = 4
 
-
 # %% [markdown]
 # ## Data normalization
 # The generative model expects inputs (and produces outputs) in the range [-1. 1]. Here we use `nobrainer`'s volume processing utilities to convert the input volumes to that range
@@ -149,11 +142,10 @@ def scale(x):
 
 # %%
 from nobrainer.processing.generation import ProgressiveGeneration
-gen = ProgressiveGeneration()
+gen = ProgressiveGeneration() #latent_size=1024, g_fmap_base=2048, d_fmap_base=2048)
 gen.fit(datasets,
-        epochs=10,
+        epochs=20,
         normalizer=scale)
-
 
 # %% [markdown]
 # # Generate synthetic brain images from the trained PGAN model
