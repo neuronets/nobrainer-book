@@ -38,7 +38,7 @@
 # # Install and setup `nobrainer`
 
 # %%
-pip install --no-cache-dir nilearn nobrainer
+# pip install --no-cache-dir nilearn nobrainer
 
 
 # %%
