@@ -7,14 +7,13 @@
 # In[9]:
 
 
-get_ipython().system('pip install nobrainer')
+# get_ipython().system('pip install nobrainer')
 
 
 # In[10]:
 
 
 import nobrainer
-
 
 # #### Sample data
 # Here, we download 10 T1-weighted brain scans and their corresponding FreeSurfer segmentations. These volumes take up about 46 MB and are saved to a temporary directory. The returned string csv_path is the path to a CSV file, each row of which contains the paths to a pair of features and labels volumes.
@@ -24,7 +23,7 @@ import nobrainer
 
 csv_path = nobrainer.utils.get_data()
 filepaths = nobrainer.io.read_csv(csv_path)
-get_ipython().system('cat {csv_path}')
+# get_ipython().system('cat {csv_path}')
 
 
 # In[12]:
@@ -32,17 +31,16 @@ get_ipython().system('cat {csv_path}')
 
 import matplotlib.pyplot as plt
 import nibabel as nib
-
 from nilearn import plotting
-
 from nobrainer.processing.brain_generator import BrainGenerator
-
 
 # In[13]:
 
 
 fig = plt.figure(figsize=(12, 6))
-plotting.plot_roi(filepaths[0][1], bg_img=filepaths[0][0], alpha=0.4, vmin=0, vmax=1.5, figure=fig)
+plotting.plot_roi(
+    filepaths[0][1], bg_img=filepaths[0][0], alpha=0.4, vmin=0, vmax=1.5, figure=fig
+)
 
 
 # #### Generate an image from the label map.
@@ -83,7 +81,7 @@ plotting.plot_roi(label, bg_img=image, alpha=0.4, vmin=0, vmax=1.5, figure=fig)
 nib.save(image, "/tmp/image.nii.gz")
 nib.save(label, "/tmp/label.nii.gz")
 
-print('Success')
+print("Success")
 
 
 # Additional information about SynthSeg and related parameters for the brain generation can be found at https://github.com/BBillot/SynthSeg
