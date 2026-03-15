@@ -39,7 +39,7 @@
 # # Install and setup `nobrainer`
 
 # %%
-# !pip install nobrainer nilearn
+# !uv pip install --pre nobrainer nilearn
 
 # %%
 import os

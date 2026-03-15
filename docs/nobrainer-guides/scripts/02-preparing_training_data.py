@@ -22,7 +22,7 @@
 
 
 # %%
-# !pip install nobrainer nilearn
+# !uv pip install --pre nobrainer nilearn
 
 # %%
 import nibabel as nib

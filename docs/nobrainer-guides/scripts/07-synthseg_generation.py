@@ -7,7 +7,7 @@
 # In[9]:
 
 
-# get_ipython().system('pip install nobrainer')
+# get_ipython().system('uv pip install --pre nobrainer')
 
 
 # In[10]:
