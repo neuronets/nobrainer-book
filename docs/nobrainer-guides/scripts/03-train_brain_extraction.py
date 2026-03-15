@@ -215,6 +215,9 @@ plotting.plot_roi(
 # ## Save the trained model
 
 # %%
+import os
+
+os.makedirs("data", exist_ok=True)
 torch.save(model.state_dict(), "data/unet-brainmask-toy.pth")
 print("Model saved to data/unet-brainmask-toy.pth")
 
