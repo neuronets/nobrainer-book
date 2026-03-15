@@ -14,167 +14,163 @@
 
 # %% [markdown]
 #
+# <a href="https://colab.research.google.com/github/neuronets/nobrainer-book/blob/master/docs/nobrainer-guides/notebooks/04-train_brain_generation.ipynb" target="_parent"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
+#
 # # Train a neural network to generate realistic brain volumes
 #
-# In this notebook, we will use `nobrainer` to train a model for generation of
-# realistic, synthetic brain MRI volumes. We will use a Progressive GAN with
-# PyTorch Lightning for training.
+# In this notebook, we will use `nobrainer` to train a model for generation of realistic, synthetic brain MRI volumes. We will use a Generative Adversarial Network to model the generation and use a progressive growing training method for high quality generation at higher resolutions.
 #
 # In the following cells, we will:
 #
 # 1. Get sample T1-weighted MR scans as features.
-# 2. Normalize and downsample the volumes to a small resolution for fast
-#    training.
-# 3. Build a PyTorch DataLoader.
-# 4. Instantiate a ProgressiveGAN model.
-# 5. Train with PyTorch Lightning.
-# 6. Generate some synthetic brain images.
+# 2. Convert the data to TFRecords format.
+# 3. Instantiate a progressive convolutional neural network for generator and discriminator.
+# 4. Create a Dataset of the features.
+# 5. Instantiate a trainer and choose a loss function to use.
+# 6. Train on part of the data in two phases (transition and resolution).
+# 7. Repeat steps 4-6 for each growing resolution.
+# 8. Generate some images using trained model
 #
 # ## Google Colaboratory
 #
-# If you are using Colab, please switch your runtime to GPU. To do this, select
-# `Runtime > Change runtime type` in the top menu. Then select GPU under
-# `Hardware accelerator`. A GPU greatly speeds up training.
+# If you are using Colab, please switch your runtime to GPU. To do this, select `Runtime > Change runtime type` in the top menu. Then select GPU under `Hardware accelerator`. A GPU greatly speeds up training.
 #
 # # Install and setup `nobrainer`
 
 # %%
-# !pip install --no-cache-dir nilearn nobrainer
+# pip install --no-cache-dir nilearn nobrainer
+
 
 # %%
-import nibabel as nib
-import numpy as np
-import pytorch_lightning as pl
-from scipy.ndimage import zoom
-import torch
-from torch.utils.data import DataLoader, TensorDataset
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+import tensorflow as tf
 
-from nobrainer.io import read_csv
-from nobrainer.models.generative import ProgressiveGAN
-from nobrainer.utils import get_data
+
+# %%
+import nobrainer
 
 # %% [markdown]
-# # Get sample features
+# # Get sample features and labels
 #
-# We use all 10 T1-weighted volumes for training. Many more volumes would be
-# required to train a model for any useful purpose.
+# We use 9 pairs of volumes for training and 1 pair of volumes for evaluation. Many more volumes would be required to train a model for any useful purpose.
 
 # %%
-csv_path = get_data()
-filepaths = read_csv(csv_path)
-print(f"Downloaded {len(filepaths)} subjects")
+csv_of_filepaths = nobrainer.utils.get_data()
+filepaths = nobrainer.io.read_csv(csv_of_filepaths)
+
+train_paths = filepaths[:9]
 
 # %% [markdown]
-# # Downsample and normalize volumes
+# # Convert medical images to TFRecords
 #
-# The generative model expects inputs in a specific range. We normalize each
-# volume to [0, 1] and downsample to 4^3 for fast CPU training. For higher
-# quality generation, use larger resolutions and a multi-resolution schedule.
+# Remember how many full volumes are in the TFRecords files. This will be necessary to know how many steps are in on training epoch. The default training method needs to know this number, because Datasets don't always know how many items they contain.
 
 # %%
-TARGET_SIZE = 4
+from nobrainer.dataset import write_multi_resolution
 
-volumes = []
-for img_path, _ in filepaths:
-    vol = np.asarray(nib.load(img_path).dataobj, dtype=np.float32)
-    # Normalize to [0, 1]
-    vmin, vmax = vol.min(), vol.max()
-    if vmax > vmin:
-        vol = (vol - vmin) / (vmax - vmin)
-    # Downsample to TARGET_SIZE^3
-    factors = [TARGET_SIZE / s for s in vol.shape[:3]]
-    vol_small = zoom(vol, factors, order=1)
-    volumes.append(vol_small)
-
-imgs = torch.from_numpy(np.stack(volumes)[:, None])  # (N, 1, 4, 4, 4)
-print(f"Training set: {imgs.shape[0]} volumes of shape {TARGET_SIZE}^3")
-print(f"Value range: [{imgs.min():.3f}, {imgs.max():.3f}]")
-
-# %% [markdown]
-# # Create a DataLoader
 
 # %%
-torch.manual_seed(42)
+datasets = write_multi_resolution(train_paths,
+                                  tfrecdir="data/generate",
+                                  n_processes=None)
 
-BATCH_SIZE = 4
-loader = DataLoader(TensorDataset(imgs), batch_size=BATCH_SIZE, shuffle=True)
+
+# %%
+print(datasets)
 
 # %% [markdown]
-# # Build the ProgressiveGAN
+# # Prepare for training
 #
-# We use a single resolution level (4) to keep this demo fast on CPU. For
-# multi-resolution training, pass e.g.
-# `resolution_schedule=[4, 8, 16, 32, 64]`.
+# ## Hyperparameters
+#
+# The datasets have the following structure. One can adjust the `batch size` depending on compute power and available GPUs, but also epochs and normalizers.
+#
+# ```python
+# datasets = {8: {'file_pattern': 'data/generate/*res-008.tfrec',
+#   'batch_size': 1,
+#   'normalizer': None},
+#  16: {'file_pattern': 'data/generate/*res-016.tfrec',
+#   'batch_size': 1,
+#   'normalizer': None},
+#  32: {'file_pattern': 'data/generate/*res-032.tfrec',
+#   'batch_size': 1,
+#   'normalizer': None},
+#  64: {'file_pattern': 'data/generate/*res-064.tfrec',
+#   'batch_size': 1,
+#   'normalizer': None},
+#  128: {'file_pattern': 'data/generate/*res-128.tfrec',
+#   'batch_size': 1,
+#   'normalizer': None},
+#  256: {'file_pattern': 'data/generate/*res-256.tfrec',
+#   'batch_size': 1,
+#   'normalizer': None}}
+# ```
+#
+# With this in mind, we can set the numbers of training epochs and the batch size for each resolution manually.
 
 # %%
-model = ProgressiveGAN(
-    latent_size=64,
-    fmap_base=64,
-    fmap_max=64,
-    resolution_schedule=[TARGET_SIZE],
-    steps_per_phase=500,
-)
+# Adjust number of epochs
+datasets[8]['epochs'] = 1000
+datasets[16]['epochs'] = 1000
+datasets[32]['epochs'] = 400
+datasets[64]['epochs'] = 200
 
-n_params_g = sum(p.numel() for p in model.generator.parameters())
-n_params_d = sum(p.numel() for p in model.discriminator.parameters())
-print(f"Generator params:     {n_params_g:,}")
-print(f"Discriminator params: {n_params_d:,}")
+# Adjust batch size from the default of 1
+datasets[8]['batch_size'] = 8
+datasets[16]['batch_size'] = 8
+datasets[32]['batch_size'] = 8
+datasets[64]['batch_size'] = 4
 
 # %% [markdown]
-# # Train with PyTorch Lightning
-#
-# The fit progresses through the resolutions defined in the schedule. For this
-# demo we run only a small number of steps.
+# ## Data normalization
+# The generative model expects inputs (and produces outputs) in the range [-1. 1]. Here we use `nobrainer`'s volume processing utilities to convert the input volumes to that range
 
 # %%
-trainer = pl.Trainer(
-    max_steps=100,
-    accelerator="auto",
-    devices=1,
-    enable_checkpointing=False,
-    logger=False,
-    enable_progress_bar=True,
-)
+from nobrainer.volume import normalize, adjust_dynamic_range
 
-trainer.fit(model, loader)
-print("Training complete")
+def scale(x):
+    """Scale data to -1 to 1"""
+    return adjust_dynamic_range(normalize(x), [0, 1], [-1, 1])
+
+
+# %% [markdown]
+# # Model fit
+# The fit progresses through the resolutions defined in `datasets`, from 8 to 256, doubling each resolution. Within each resolution, a transition and resolution phase of training is performed.
+#
+# Note that the `epochs` parameter to fit is superceded by the resolution-specific epochs we've modified above.
+
+# %%
+from nobrainer.processing.generation import ProgressiveGeneration
+gen = ProgressiveGeneration() #latent_size=1024, g_fmap_base=2048, d_fmap_base=2048)
+gen.fit(datasets,
+        epochs=20,
+        normalizer=scale)
 
 # %% [markdown]
 # # Generate synthetic brain images from the trained PGAN model
 #
-# The generated volumes are at 4^3 resolution. For useful images, train at
-# higher resolutions with more data and training steps.
+# Note that one can return the native datatype by not passing a `data_type` argument. In this case, we want voxel values in the range [0, 255].
 
 # %%
 from nilearn import plotting
+import numpy as np
 import matplotlib.pyplot as plt
 
-model.eval()
-model.generator.current_level = 0
-model.generator.alpha = 1.0
+images = gen.generate(data_type=np.uint8, n_images=10)
 
-with torch.no_grad():
-    z = torch.randn(4, 64, device=model.device)
-    generated = model.generator(z)
-
-gen_np = generated.cpu().numpy()
-print(f"Generated shape: {gen_np.shape}")
-print(f"Value range: [{gen_np.min():.3f}, {gen_np.max():.3f}]")
+fig, ax = plt.subplots(len(images), 1, figsize=(18, 30))
+index = 0
+for img in images:
+    plotting.plot_anat(anat_img=img, figure=fig, axes=ax[index],
+                       draw_cross=False)
+    index += 1
 
 # %% [markdown]
 # # Save model
 
 # %%
-trainer.save_checkpoint("data/brain_generator.ckpt")
-print("Model saved to data/brain_generator.ckpt")
+gen.save("data/brain_generator")
 
 # %% [markdown]
-# # Load model
-#
-# ```python
-# model = ProgressiveGAN.load_from_checkpoint("data/brain_generator.ckpt")
-# ```
-
-# %% [markdown]
-# Next, learn how to
-# [use augmentation to train models with less data](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/master/docs/nobrainer-guides/notebooks/05-training_with_augmentation.ipynb)
+# Next, learn how to [use augmentatation to train models with less data](https://colab.research.google.com/github/neuronets/nobrainer-book/blob/master/docs/nobrainer-guides/notebooks/05-training_with_augmentation.ipynb)
