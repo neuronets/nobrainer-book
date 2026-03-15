@@ -44,7 +44,7 @@
 # # Install and setup `nobrainer`
 
 # %%
-# !pip install nobrainer nilearn
+# !uv pip install nobrainer nilearn
 
 # %%
 import nibabel as nib

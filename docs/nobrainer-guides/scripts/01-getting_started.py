@@ -75,7 +75,7 @@
 # Nobrainer can be installed using `pip`.
 
 # %%
-# !pip install --no-cache-dir nobrainer
+# !uv pip install nobrainer
 
 # %% [markdown]
 # # Accessing Nobrainer
