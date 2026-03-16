@@ -23,6 +23,9 @@ try:
 except ImportError:
     pass  # Not on Colab; install manually with: uv pip install nobrainer
 
+import nobrainer.utils
+import nobrainer.io
+
 # #### Sample data
 # Here, we download 10 T1-weighted brain scans and their corresponding FreeSurfer segmentations. These volumes take up about 46 MB and are saved to a temporary directory. The returned string csv_path is the path to a CSV file, each row of which contains the paths to a pair of features and labels volumes.
 
