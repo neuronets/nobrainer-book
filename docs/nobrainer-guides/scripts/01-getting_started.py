@@ -75,7 +75,9 @@
 # Nobrainer can be installed using `pip`.
 
 # %%
-# !uv pip install nobrainer
+<<<<<<< HEAD
+=======
+>>>>>>> origin/alpha
 
 # %% [markdown]
 # # Accessing Nobrainer

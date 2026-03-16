@@ -39,7 +39,6 @@
 # # Install and setup `nobrainer`
 
 # %%
-# !uv pip install nobrainer nilearn
 
 # %%
 import os
