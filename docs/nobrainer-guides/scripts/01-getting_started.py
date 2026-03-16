@@ -75,9 +75,17 @@
 # Nobrainer can be installed using `pip`.
 
 # %%
-<<<<<<< HEAD
-=======
->>>>>>> origin/alpha
+import subprocess
+import sys
+
+try:
+    import google.colab  # noqa: F401
+    subprocess.check_call(
+        [sys.executable, "-m", "pip", "install", "-q",
+         "nobrainer", "nilearn", "matplotlib"]
+    )
+except ImportError:
+    pass  # Not on Colab; install manually with: uv pip install nobrainer
 
 # %% [markdown]
 # # Accessing Nobrainer
