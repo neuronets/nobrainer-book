@@ -22,15 +22,19 @@
 
 
 # %%
+# Set to True on the alpha branch to install pre-release versions
+PRE_RELEASE = False
+
 import subprocess
 import sys
 
 try:
     import google.colab  # noqa: F401
-    subprocess.check_call(
-        [sys.executable, "-m", "pip", "install", "-q",
-         "nobrainer", "nilearn", "matplotlib"]
-    )
+    cmd = [sys.executable, "-m", "pip", "install", "-q",
+           "nobrainer", "nilearn", "matplotlib"]
+    if PRE_RELEASE:
+        cmd.insert(4, "--pre")
+    subprocess.check_call(cmd)
 except ImportError:
     pass  # Not on Colab; install manually with: uv pip install nobrainer
 # %%
