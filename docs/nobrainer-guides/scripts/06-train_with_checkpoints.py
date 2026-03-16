@@ -39,7 +39,17 @@
 # # Install and setup `nobrainer`
 
 # %%
-# !uv pip install --pre nobrainer nilearn
+import subprocess
+import sys
+
+try:
+    import google.colab  # noqa: F401
+    subprocess.check_call(
+        [sys.executable, "-m", "pip", "install", "--pre", "-q",
+         "nobrainer", "nilearn", "matplotlib"]
+    )
+except ImportError:
+    pass  # Not on Colab; install manually with: uv pip install nobrainer
 
 # %%
 import os

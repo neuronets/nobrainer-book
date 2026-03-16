@@ -25,7 +25,17 @@
 # 5. Generate synthetic brain volumes
 
 # %%
-# !uv pip install --pre nilearn nobrainer
+import subprocess
+import sys
+
+try:
+    import google.colab  # noqa: F401
+    subprocess.check_call(
+        [sys.executable, "-m", "pip", "install", "--pre", "-q",
+         "nobrainer", "nilearn", "matplotlib"]
+    )
+except ImportError:
+    pass  # Not on Colab; install manually with: uv pip install nobrainer
 
 # %%
 import nibabel as nib

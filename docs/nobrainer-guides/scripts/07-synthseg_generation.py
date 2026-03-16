@@ -7,7 +7,16 @@
 # In[9]:
 
 
-# get_ipython().system('uv pip install --pre nobrainer')
+import subprocess
+import sys
+
+try:
+    import google.colab  # noqa: F401
+    subprocess.check_call(
+        [sys.executable, "-m", "pip", "install", "--pre", "-q", "nobrainer"]
+    )
+except ImportError:
+    pass  # Not on Colab
 
 
 # In[10]:
