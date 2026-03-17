@@ -6,16 +6,16 @@ project:
     - file: README.md
     - title: Tutorials
       children:
-        - file: docs/nobrainer-guides/scripts/01_install_and_explore.py
-        - file: docs/nobrainer-guides/scripts/02_download_and_inspect.py
-        - file: docs/nobrainer-guides/scripts/03_extract_patches_dataset.py
-        - file: docs/nobrainer-guides/scripts/04_simple_segmentation.py
-        - file: docs/nobrainer-guides/scripts/05_bayesian_uncertainty.py
-        - file: docs/nobrainer-guides/scripts/06_brain_generation.py
-        - file: docs/nobrainer-guides/scripts/07_advanced_training.py
-        - file: docs/nobrainer-guides/scripts/08_model_management.py
-        - file: docs/nobrainer-guides/scripts/09_zarr_data_pipeline.py
-        - file: docs/nobrainer-guides/scripts/10_scaling_multigpu.py
-        - file: docs/nobrainer-guides/scripts/11_contributing.py
+        - file: docs/nobrainer-guides/notebooks/01_install_and_explore.ipynb
+        - file: docs/nobrainer-guides/notebooks/02_download_and_inspect.ipynb
+        - file: docs/nobrainer-guides/notebooks/03_extract_patches_dataset.ipynb
+        - file: docs/nobrainer-guides/notebooks/04_simple_segmentation.ipynb
+        - file: docs/nobrainer-guides/notebooks/05_bayesian_uncertainty.ipynb
+        - file: docs/nobrainer-guides/notebooks/06_brain_generation.ipynb
+        - file: docs/nobrainer-guides/notebooks/07_advanced_training.ipynb
+        - file: docs/nobrainer-guides/notebooks/08_model_management.ipynb
+        - file: docs/nobrainer-guides/notebooks/09_zarr_data_pipeline.ipynb
+        - file: docs/nobrainer-guides/notebooks/10_scaling_multigpu.ipynb
+        - file: docs/nobrainer-guides/notebooks/11_contributing.ipynb
 site:
   title: Nobrainer Book
