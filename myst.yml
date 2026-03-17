@@ -19,5 +19,3 @@ project:
         - file: docs/nobrainer-guides/notebooks/11_contributing.ipynb
 site:
   title: Nobrainer Book
-  options:
-    BASE_URL: /nobrainer-book
