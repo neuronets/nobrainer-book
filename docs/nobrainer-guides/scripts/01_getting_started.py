@@ -30,7 +30,8 @@ try:
     import google.colab  # noqa: F401
 
     subprocess.run(
-        ["pip", "install", "nobrainer" + ("[dev]" if PRE_RELEASE else "")],
+        ["pip", "install", "-q", "nobrainer[dev]", "monai", "nilearn", "matplotlib"]
+        + (["--pre"] if PRE_RELEASE else []),
         check=True,
     )
 except ImportError:
@@ -73,6 +74,7 @@ ds = (
     Dataset.from_files(filepaths, block_shape=(32, 32, 32), n_classes=2)
     .batch(2)
     .augment()
+    .binarize()
 )
 
 seg = Segmentation("unet", model_args={"channels": (8, 16, 32), "strides": (2, 2)})
