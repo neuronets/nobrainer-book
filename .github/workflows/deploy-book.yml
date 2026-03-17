@@ -33,7 +33,7 @@ jobs:
 
       - name: Build book
         run: |
-          uv run jupyter-book build .
+          uv run jupyter-book build --html
 
       - name: Upload artifact
         if: github.event_name == 'push'

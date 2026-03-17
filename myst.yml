@@ -1,0 +1,21 @@
+version: 1
+project:
+  title: Nobrainer Book
+  github: https://github.com/neuronets/nobrainer-book
+  toc:
+    - file: README.md
+    - title: Tutorials
+      children:
+        - file: docs/nobrainer-guides/scripts/01_install_and_explore.py
+        - file: docs/nobrainer-guides/scripts/02_download_and_inspect.py
+        - file: docs/nobrainer-guides/scripts/03_extract_patches_dataset.py
+        - file: docs/nobrainer-guides/scripts/04_simple_segmentation.py
+        - file: docs/nobrainer-guides/scripts/05_bayesian_uncertainty.py
+        - file: docs/nobrainer-guides/scripts/06_brain_generation.py
+        - file: docs/nobrainer-guides/scripts/07_advanced_training.py
+        - file: docs/nobrainer-guides/scripts/08_model_management.py
+        - file: docs/nobrainer-guides/scripts/09_zarr_data_pipeline.py
+        - file: docs/nobrainer-guides/scripts/10_scaling_multigpu.py
+        - file: docs/nobrainer-guides/scripts/11_contributing.py
+site:
+  title: Nobrainer Book
