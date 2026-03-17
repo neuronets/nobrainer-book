@@ -1,0 +1,16 @@
+format: jb-book
+root: README
+parts:
+  - caption: Tutorials
+    chapters:
+      - file: docs/nobrainer-guides/scripts/01_install_and_explore
+      - file: docs/nobrainer-guides/scripts/02_download_and_inspect
+      - file: docs/nobrainer-guides/scripts/03_extract_patches_dataset
+      - file: docs/nobrainer-guides/scripts/04_simple_segmentation
+      - file: docs/nobrainer-guides/scripts/05_bayesian_uncertainty
+      - file: docs/nobrainer-guides/scripts/06_brain_generation
+      - file: docs/nobrainer-guides/scripts/07_advanced_training
+      - file: docs/nobrainer-guides/scripts/08_model_management
+      - file: docs/nobrainer-guides/scripts/09_zarr_data_pipeline
+      - file: docs/nobrainer-guides/scripts/10_scaling_multigpu
+      - file: docs/nobrainer-guides/scripts/11_contributing

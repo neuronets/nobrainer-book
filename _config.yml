@@ -1,0 +1,18 @@
+title: Nobrainer Book
+author: Nobrainer Developers
+logo: ""
+
+execute:
+  execute_notebooks: "off"  # Don't execute during build (too slow)
+
+repository:
+  url: https://github.com/neuronets/nobrainer-book
+  branch: master
+
+launch_buttons:
+  colab_url: "https://colab.research.google.com"
+  binderhub_url: ""
+
+parse:
+  myst_enable_extensions:
+    - colon_fence
