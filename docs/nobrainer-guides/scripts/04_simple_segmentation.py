@@ -63,14 +63,38 @@ print("  Block shape:", ds.block_shape)
 print("  Batch size:", ds.batch_size)
 
 # %% [markdown]
-# ## 2. Train with the Segmentation estimator
+# ## 2. CPU vs CUDA
+#
+# Nobrainer detects available hardware automatically:
+# - **CPU**: works everywhere (Colab, laptops, CI)
+# - **CUDA GPU**: used automatically when available — no code changes needed
+#
+# The estimator API handles device placement transparently:
+# - `.fit()` moves the model and data to GPU if CUDA is available
+# - `.predict()` runs inference on the best available device
+#
+# To **force CPU** (e.g., for debugging), set `multi_gpu=False` and the
+# model stays on CPU. For **explicit device control**, use the advanced
+# API (see tutorial 07):
+# ```python
+# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# model.to(device)
+# ```
+
+# %%
+import torch  # noqa: E402
+
+print(f"PyTorch device: {'cuda (' + torch.cuda.get_device_name(0) + ')' if torch.cuda.is_available() else 'cpu'}")
+
+# %% [markdown]
+# ## 3. Train with the Segmentation estimator
 #
 # The `Segmentation` class wraps model creation, optimizer setup, and
 # training into a single `.fit()` call. We use tiny model parameters
 # for speed: `channels=(4, 8)` and `strides=(2,)`.
 
 # %%
-from nobrainer.processing.segmentation import Segmentation
+from nobrainer.processing.segmentation import Segmentation  # noqa: E402
 
 seg = Segmentation(
     "unet",
