@@ -19,7 +19,8 @@
 # critical for clinical applications where knowing *what the model does not
 # know* matters as much as knowing what it predicts.
 #
-# This tutorial uses a Bayesian MeshNet with Pyro-ppl.
+# This tutorial uses a Bayesian VNet with Pyro-ppl, following the
+# architecture from the kwyk brain labeling project.
 
 # %%
 PRE_RELEASE = False
@@ -48,7 +49,7 @@ with open(csv_path) as f:
     next(reader)
     filepaths = [(row[0], row[1]) for row in reader]
 
-BLOCK_SHAPE = (16, 16, 16)
+BLOCK_SHAPE = (32, 32, 32)  # 32^3 matches kwyk training config
 
 train_files = filepaths[:3]
 eval_feature_path = filepaths[3][0]
@@ -62,28 +63,43 @@ ds = (
 print("Dataset ready:", len(ds.data), "subjects")
 
 # %% [markdown]
-# ## 2. Train a Bayesian MeshNet
+# ## 2. Train a Bayesian VNet
 #
-# The `bayesian_meshnet` uses Pyro's stochastic weight layers (BayesianConv3d).
-# Each forward pass samples different weights, so repeated predictions give
-# different outputs — this is what enables uncertainty quantification.
+# The `bayesian_vnet` uses Pyro's stochastic weight layers (BayesianConv3d)
+# in a U-Net-style encoder-decoder architecture. Each forward pass samples
+# different weights, so repeated predictions give different outputs — this
+# is what enables uncertainty quantification.
 #
-# MeshNet is a lightweight 7-layer dilated-convolution architecture that
-# trains faster than VNet, making it ideal for quick experiments.
+# The encoder-decoder structure with skip connections works well even on
+# small patches, making it a better choice than MeshNet for demos.
+# The kwyk project (https://github.com/neuronets/kwyk) trained a Bayesian
+# VNet on 11,000+ brain scans — here we use a tiny version.
+#
+# **Key parameters** (based on kwyk architecture):
+# - `base_filters=8`: small for CPU demo (kwyk uses 16+)
+# - `levels=2`: 2 encoder/decoder levels (kwyk uses 3-4)
+# - `prior_type="standard_normal"`: Gaussian prior on weights
+# - Block shape 32^3 matches kwyk's training configuration
+#
+# For hyperparameter optimization, use `nobrainer research run` to
+# automatically explore configurations overnight on a GPU.
 
 # %%
 from nobrainer.processing.segmentation import Segmentation  # noqa: E402
 
 seg = Segmentation(
-    "bayesian_meshnet",
+    "bayesian_vnet",
     model_args={
         "in_channels": 1,
         "n_classes": 2,
+        "base_filters": 8,
+        "levels": 2,
+        "prior_type": "standard_normal",
     },
 )
 
-seg.fit(ds, epochs=2)
-print("Bayesian MeshNet training complete!")
+seg.fit(ds, epochs=3)
+print("Bayesian VNet training complete!")
 
 # %% [markdown]
 # ## 3. Predict with uncertainty
@@ -203,3 +219,38 @@ plt.show()
 # - Quality control in automated pipelines
 #
 # In the next tutorial we will explore synthetic brain generation with GANs.
+
+# %% [markdown]
+# ## 7. Finding optimal parameters with autoresearch
+#
+# The model above uses hand-picked hyperparameters for a quick CPU demo.
+# For production models, use `nobrainer research run` to automatically
+# explore configurations overnight on a GPU:
+#
+# ```bash
+# nobrainer research run \
+#   --working-dir ./research/bayesian_vnet \
+#   --model-family bayesian_vnet \
+#   --max-experiments 15 \
+#   --budget-hours 8
+# ```
+#
+# The research loop will:
+# 1. Propose hyperparameter changes (via LLM or random grid)
+# 2. Train, evaluate, keep improvements, revert failures
+# 3. Save the best model with Croissant-ML metadata
+#
+# **Key hyperparameters to explore:**
+#
+# | Parameter | Range | Why it matters |
+# |-----------|-------|----------------|
+# | `base_filters` | 8, 16, 32 | Model capacity |
+# | `levels` | 2, 3, 4 | Depth of encoder-decoder |
+# | `prior_type` | "standard_normal", "laplace" | Weight prior shape |
+# | `kl_weight` | 1e-5 to 1e-2 (log scale) | Balance reconstruction vs regularization |
+# | `dropout_rate` | 0.0, 0.1, 0.25 | Additional stochasticity |
+# | `learning_rate` | 1e-4 to 1e-2 (log scale) | Convergence speed |
+# | `block_shape` | (32,32,32), (64,64,64) | Context per patch |
+#
+# See the kwyk project for reference: trained on 11,000+ subjects
+# with `block_shape=32`, `n_classes=50`, `lr=0.0001`.
