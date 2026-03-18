@@ -49,8 +49,10 @@ with open(csv_path) as f:
     next(reader)
     filepaths = [(row[0], row[1]) for row in reader]
 
+BLOCK_SHAPE = (16, 16, 16)
+
 # Extract patches from the first 3 subjects
-block_shape = (16, 16, 16)
+block_shape = BLOCK_SHAPE
 all_img_patches = []
 all_lbl_patches = []
 
@@ -192,6 +194,31 @@ prediction = predict(
 )
 
 print("Prediction shape:", prediction.shape)
+
+# %% [markdown]
+# ## 6. Visualize input vs prediction
+
+# %%
+import matplotlib.pyplot as plt
+
+eval_vol = nib.load(eval_path).get_fdata()
+pred_data = np.asarray(prediction.dataobj)
+mid_slice = eval_vol.shape[2] // 2
+
+plt.figure(figsize=(12, 4))
+
+plt.subplot(1, 2, 1)
+plt.imshow(eval_vol[:, :, mid_slice].T, cmap="gray", origin="lower")
+plt.title("Input volume")
+plt.axis("off")
+
+plt.subplot(1, 2, 2)
+plt.imshow(pred_data[:, :, mid_slice].T, cmap="gray", origin="lower")
+plt.title("Prediction")
+plt.axis("off")
+
+plt.tight_layout()
+plt.show()
 
 # %% [markdown]
 # ## Mapping to the estimator API

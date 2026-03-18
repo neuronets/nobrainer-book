@@ -176,6 +176,29 @@ try:
 
     plt.tight_layout()
     plt.show()
+
+    # Binarized brain mask overlay
+    brain_mask = (labels > 0).astype(np.float32)
+
+    plt.figure(figsize=(12, 4))
+    plt.subplot(1, 3, 1)
+    plt.imshow(data[:, :, mid_slice].T, cmap="gray", origin="lower")
+    plt.title("T1-weighted volume")
+    plt.axis("off")
+
+    plt.subplot(1, 3, 2)
+    plt.imshow(labels[:, :, mid_slice].T, cmap="nipy_spectral", origin="lower")
+    plt.title("Label volume")
+    plt.axis("off")
+
+    plt.subplot(1, 3, 3)
+    plt.imshow(data[:, :, mid_slice].T, cmap="gray", origin="lower")
+    plt.imshow(brain_mask[:, :, mid_slice].T, cmap="Reds", alpha=0.3, origin="lower")
+    plt.title("Binarized label overlay")
+    plt.axis("off")
+
+    plt.tight_layout()
+    plt.show()
 except ImportError:
     print("Install nilearn and matplotlib for visualization: "
           "pip install nilearn matplotlib")
