@@ -19,7 +19,7 @@
 # critical for clinical applications where knowing *what the model does not
 # know* matters as much as knowing what it predicts.
 #
-# This tutorial uses a Bayesian VNet with Pyro-ppl.
+# This tutorial uses a Bayesian MeshNet with Pyro-ppl.
 
 # %%
 PRE_RELEASE = False
@@ -62,26 +62,28 @@ ds = (
 print("Dataset ready:", len(ds.data), "subjects")
 
 # %% [markdown]
-# ## 2. Train a Bayesian VNet
+# ## 2. Train a Bayesian MeshNet
 #
-# The `bayesian_vnet` uses Pyro's stochastic weight layers. We keep
-# the model tiny for this tutorial: `base_filters=4`, `levels=2`.
+# The `bayesian_meshnet` uses Pyro's stochastic weight layers (BayesianConv3d).
+# Each forward pass samples different weights, so repeated predictions give
+# different outputs — this is what enables uncertainty quantification.
+#
+# MeshNet is a lightweight 7-layer dilated-convolution architecture that
+# trains faster than VNet, making it ideal for quick experiments.
 
 # %%
-from nobrainer.processing.segmentation import Segmentation
+from nobrainer.processing.segmentation import Segmentation  # noqa: E402
 
 seg = Segmentation(
-    "bayesian_vnet",
+    "bayesian_meshnet",
     model_args={
         "in_channels": 1,
         "n_classes": 2,
-        "base_filters": 4,
-        "levels": 2,
     },
 )
 
 seg.fit(ds, epochs=2)
-print("Bayesian VNet training complete!")
+print("Bayesian MeshNet training complete!")
 
 # %% [markdown]
 # ## 3. Predict with uncertainty
