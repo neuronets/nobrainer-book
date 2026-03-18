@@ -143,6 +143,31 @@ except ImportError:
     print("Install matplotlib for visualization")
 
 # %% [markdown]
+# ## 5. Generated volumes grid
+#
+# Generate 4 synthetic volumes and display them as a 2x2 grid of middle
+# axial slices.
+
+# %%
+try:
+    import matplotlib.pyplot as plt
+
+    grid_images = gen.generate(4)
+
+    fig, axes = plt.subplots(2, 2, figsize=(8, 8))
+    for idx, ax in enumerate(axes.flat):
+        arr = np.asarray(grid_images[idx].dataobj)
+        mid = arr.shape[2] // 2
+        ax.imshow(arr[:, :, mid].T, cmap="gray", origin="lower")
+        ax.set_title(f"Generated {idx + 1}")
+        ax.axis("off")
+
+    plt.tight_layout()
+    plt.show()
+except ImportError:
+    print("Install matplotlib for visualization")
+
+# %% [markdown]
 # ## Notes for production use
 #
 # For realistic brain generation:

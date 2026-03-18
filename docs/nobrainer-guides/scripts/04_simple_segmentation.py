@@ -44,13 +44,15 @@ with open(csv_path) as f:
     next(reader)
     filepaths = [(row[0], row[1]) for row in reader]
 
+BLOCK_SHAPE = (16, 16, 16)
+
 # Use a small subset for this tutorial
 train_files = filepaths[:3]
 eval_file = filepaths[3]
 
 # Build the training dataset: binary brain mask, small patches, batch of 2
 ds = (
-    Dataset.from_files(train_files, block_shape=(16, 16, 16), n_classes=2)
+    Dataset.from_files(train_files, block_shape=BLOCK_SHAPE, n_classes=2)
     .batch(2)
     .binarize()
 )
@@ -87,7 +89,7 @@ print("Training complete!")
 # %%
 eval_feature_path, eval_label_path = eval_file
 
-prediction = seg.predict(eval_feature_path, block_shape=(16, 16, 16))
+prediction = seg.predict(eval_feature_path, block_shape=BLOCK_SHAPE)
 print("Prediction type:", type(prediction))
 print("Prediction shape:", prediction.shape)
 
@@ -113,6 +115,35 @@ dice = 2.0 * intersection / (pred_binary.sum() + true_binary.sum() + 1e-8)
 
 print(f"Dice coefficient: {dice:.4f}")
 print("(Low score expected with tiny model and 2 epochs)")
+
+# %% [markdown]
+# ## 5. Visualize predictions
+
+# %%
+import matplotlib.pyplot as plt
+
+feature_vol = np.asarray(nib.load(eval_feature_path).dataobj)
+mid_slice = feature_vol.shape[2] // 2
+
+plt.figure(figsize=(12, 4))
+
+plt.subplot(1, 3, 1)
+plt.imshow(feature_vol[:, :, mid_slice].T, cmap="gray", origin="lower")
+plt.title("Input volume")
+plt.axis("off")
+
+plt.subplot(1, 3, 2)
+plt.imshow(pred_data[:, :, mid_slice].T, cmap="gray", origin="lower")
+plt.title("Prediction")
+plt.axis("off")
+
+plt.subplot(1, 3, 3)
+plt.imshow(true_binary[:, :, mid_slice].T, cmap="gray", origin="lower")
+plt.title("Ground truth")
+plt.axis("off")
+
+plt.tight_layout()
+plt.show()
 
 # %% [markdown]
 # ## Putting it all together

@@ -48,11 +48,13 @@ with open(csv_path) as f:
     next(reader)
     filepaths = [(row[0], row[1]) for row in reader]
 
+BLOCK_SHAPE = (16, 16, 16)
+
 train_files = filepaths[:3]
 eval_feature_path = filepaths[3][0]
 
 ds = (
-    Dataset.from_files(train_files, block_shape=(16, 16, 16), n_classes=2)
+    Dataset.from_files(train_files, block_shape=BLOCK_SHAPE, n_classes=2)
     .batch(2)
     .binarize()
 )
@@ -96,7 +98,7 @@ print("Bayesian VNet training complete!")
 # %%
 result = seg.predict(
     eval_feature_path,
-    block_shape=(16, 16, 16),
+    block_shape=BLOCK_SHAPE,
     n_samples=3,
 )
 
@@ -149,6 +151,44 @@ print(f"Voxels with above-average variance: {high_var_pct:.1f}%")
 # Percentage of voxels with above-average entropy
 high_ent_pct = 100 * (ent_data > ent_data.mean()).sum() / ent_data.size
 print(f"Voxels with above-average entropy: {high_ent_pct:.1f}%")
+
+# %% [markdown]
+# ## 6. Visualize uncertainty maps
+
+# %%
+import nibabel as nib
+import matplotlib.pyplot as plt
+
+feature_vol = np.asarray(nib.load(eval_feature_path).dataobj)
+label_data = np.asarray(label_img.dataobj)
+mid_slice = feature_vol.shape[2] // 2
+
+plt.figure(figsize=(16, 4))
+
+plt.subplot(1, 4, 1)
+plt.imshow(feature_vol[:, :, mid_slice].T, cmap="gray", origin="lower")
+plt.title("Input volume")
+plt.axis("off")
+
+plt.subplot(1, 4, 2)
+plt.imshow(label_data[:, :, mid_slice].T, cmap="gray", origin="lower")
+plt.title("Predicted label")
+plt.axis("off")
+
+plt.subplot(1, 4, 3)
+plt.imshow(var_data[:, :, mid_slice].T, cmap="hot", origin="lower")
+plt.title("Variance map")
+plt.colorbar()
+plt.axis("off")
+
+plt.subplot(1, 4, 4)
+plt.imshow(ent_data[:, :, mid_slice].T, cmap="hot", origin="lower")
+plt.title("Entropy map")
+plt.colorbar()
+plt.axis("off")
+
+plt.tight_layout()
+plt.show()
 
 # %% [markdown]
 # ## Summary
