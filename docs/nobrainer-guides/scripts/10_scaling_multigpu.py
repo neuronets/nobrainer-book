@@ -33,19 +33,28 @@ except ImportError:
     pass
 
 # %% [markdown]
-# ## 1. Detect available GPUs
+# ## 1. Detect available devices
+#
+# `nobrainer.training.get_device()` selects the best device automatically
+# (CUDA > MPS > CPU). Multi-GPU training requires CUDA GPUs.
 
 # %%
 import torch
+from nobrainer.training import get_device
+
+device = get_device()
+print(f"Best available device: {device}")
 
 n_gpus = torch.cuda.device_count()
-print(f"Available GPUs: {n_gpus}")
+print(f"CUDA GPUs: {n_gpus}")
 
 if n_gpus > 0:
     for i in range(n_gpus):
         name = torch.cuda.get_device_name(i)
         mem = torch.cuda.get_device_properties(i).total_mem / 1e9
         print(f"  GPU {i}: {name} ({mem:.1f} GB)")
+elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+    print("  Apple MPS available (single-GPU training supported)")
 else:
     print("  No GPUs detected. Multi-GPU examples are conceptual only.")
 

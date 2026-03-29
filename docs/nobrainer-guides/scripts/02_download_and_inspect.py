@@ -204,6 +204,33 @@ except ImportError:
           "pip install nilearn matplotlib")
 
 # %% [markdown]
+# ## 8. Fetching real data from OpenNeuro (optional)
+#
+# For research beyond the sample dataset, nobrainer can fetch full datasets
+# from [OpenNeuro](https://openneuro.org) via DataLad. This requires the
+# optional `datalad` dependency (`pip install nobrainer[versioning]`).
+#
+# ```python
+# from nobrainer.datasets.openneuro import (
+#     install_derivatives, find_subject_pairs, write_manifest,
+# )
+#
+# # Download a dataset's derivatives (FreeSurfer outputs)
+# ds = install_derivatives("ds000114", "/tmp/data")
+#
+# # Find paired T1 + label volumes across subjects
+# pairs = find_subject_pairs(ds)
+#
+# # Write a CSV manifest compatible with Dataset.from_files()
+# write_manifest(pairs, "manifest.csv")
+# ```
+#
+# The manifest CSV can then be used directly:
+# ```python
+# ds = Dataset.from_files(pairs, block_shape=(128,128,128), n_classes=50)
+# ```
+
+# %% [markdown]
 # ## Summary
 #
 # We downloaded 10 brain volumes with FreeSurfer labels, inspected their

@@ -63,28 +63,34 @@ print("  Block shape:", ds.block_shape)
 print("  Batch size:", ds.batch_size)
 
 # %% [markdown]
-# ## 2. CPU vs CUDA
+# ## 2. Device selection: CUDA, MPS, or CPU
 #
-# Nobrainer detects available hardware automatically:
-# - **CPU**: works everywhere (Colab, laptops, CI)
-# - **CUDA GPU**: used automatically when available — no code changes needed
+# Nobrainer detects available hardware automatically using
+# `nobrainer.training.get_device()`, which selects **CUDA > MPS > CPU**:
+#
+# - **CUDA GPU**: used when available (Linux/Windows with NVIDIA GPU, Colab)
+# - **MPS GPU**: used on Apple Silicon Macs (M1/M2/M3/M4)
+# - **CPU**: fallback that works everywhere
 #
 # The estimator API handles device placement transparently:
-# - `.fit()` moves the model and data to GPU if CUDA is available
+# - `.fit()` moves the model and data to the best available device
 # - `.predict()` runs inference on the best available device
 #
 # To **force CPU** (e.g., for debugging), set `multi_gpu=False` and the
 # model stays on CPU. For **explicit device control**, use the advanced
 # API (see tutorial 07):
 # ```python
-# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# from nobrainer.training import get_device
+# device = get_device()
 # model.to(device)
 # ```
 
 # %%
 import torch  # noqa: E402
+from nobrainer.training import get_device  # noqa: E402
 
-print(f"PyTorch device: {'cuda (' + torch.cuda.get_device_name(0) + ')' if torch.cuda.is_available() else 'cpu'}")
+device = get_device()
+print(f"Selected device: {device}")
 
 # %% [markdown]
 # ## 3. Train with the Segmentation estimator

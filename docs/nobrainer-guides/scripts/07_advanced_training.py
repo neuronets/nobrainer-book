@@ -105,10 +105,13 @@ print("Parameters:", sum(p.numel() for p in model.parameters()))
 # %% [markdown]
 # ## 3. Option A: Manual training loop
 #
-# Full control over every step.
+# Full control over every step. Use `get_device()` to automatically select
+# the best available device (CUDA > MPS > CPU).
 
 # %%
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+from nobrainer.training import get_device  # noqa: E402
+
+device = get_device()
 model.to(device)
 
 optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)

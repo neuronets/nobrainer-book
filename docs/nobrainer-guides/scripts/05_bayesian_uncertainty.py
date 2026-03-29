@@ -75,10 +75,23 @@ print("Dataset ready:", len(ds.data), "subjects")
 # The kwyk project (https://github.com/neuronets/kwyk) trained a Bayesian
 # VNet on 11,000+ brain scans — here we use a tiny version.
 #
+# ### The 3 kwyk model variants
+#
+# The kwyk brain labeling project provides three Bayesian model variants,
+# each capturing uncertainty differently:
+#
+# 1. **Gaussian Bayesian** (`prior_type="standard_normal"`): Full Bayesian
+#    with Gaussian priors on all weights. Most parameters are uncertain.
+# 2. **Spike-and-slab** (`prior_type="spike_and_slab"`): A sparsity-inducing
+#    prior where each weight is either "on" (slab) or "off" (spike near
+#    zero). This encourages the model to learn which connections matter.
+# 3. **MC Bernoulli dropout**: Uses dropout at inference time (Monte Carlo
+#    dropout) to approximate Bayesian inference. Simpler but effective.
+#
 # **Key parameters** (based on kwyk architecture):
 # - `base_filters=8`: small for CPU demo (kwyk uses 16+)
 # - `levels=2`: 2 encoder/decoder levels (kwyk uses 3-4)
-# - `prior_type="standard_normal"`: Gaussian prior on weights
+# - `prior_type`: `"standard_normal"`, `"laplace"`, or `"spike_and_slab"`
 # - Block shape 32^3 matches kwyk's training configuration
 #
 # For hyperparameter optimization, use `nobrainer research run` to
@@ -246,7 +259,7 @@ plt.show()
 # |-----------|-------|----------------|
 # | `base_filters` | 8, 16, 32 | Model capacity |
 # | `levels` | 2, 3, 4 | Depth of encoder-decoder |
-# | `prior_type` | "standard_normal", "laplace" | Weight prior shape |
+# | `prior_type` | "standard_normal", "laplace", "spike_and_slab" | Weight prior shape |
 # | `kl_weight` | 1e-5 to 1e-2 (log scale) | Balance reconstruction vs regularization |
 # | `dropout_rate` | 0.0, 0.1, 0.25 | Additional stochasticity |
 # | `learning_rate` | 1e-4 to 1e-2 (log scale) | Convergence speed |

@@ -39,19 +39,27 @@ import nobrainer
 print("nobrainer version:", nobrainer.__version__)
 
 # %% [markdown]
-# ## 2. Check PyTorch and CUDA availability
+# ## 2. Check PyTorch and device availability
 #
 # Nobrainer uses PyTorch as its backend. Training is faster on GPU, but all
 # tutorials work on CPU as well.
+#
+# `nobrainer.training.get_device()` automatically selects the best available
+# device in priority order: **CUDA > MPS (Apple Silicon) > CPU**.
 
 # %%
 import torch
+from nobrainer.training import get_device
 
 print("PyTorch version:", torch.__version__)
+device = get_device()
+print("Selected device:", device)
 print("CUDA available:", torch.cuda.is_available())
 if torch.cuda.is_available():
     print("CUDA device:", torch.cuda.get_device_name(0))
     print("GPU count:", torch.cuda.device_count())
+elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+    print("Apple MPS (Metal) GPU available")
 else:
     print("Running on CPU (this is fine for tutorials)")
 
@@ -106,6 +114,7 @@ optional_deps = {
     "pyro": "Bayesian models (pyro-ppl)",
     "pytorch_lightning": "Generative model training",
     "zarr": "Zarr v3 data pipeline",
+    "datalad": "Dataset versioning and OpenNeuro access",
 }
 
 for mod, description in optional_deps.items():
